@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Virtual Batik Geometri Indonesia</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Quicksand', 'sans-serif'],
+                        'heading': ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        'edu-blue': '#87CEEB',    
+                        'edu-green': '#90EE90',   
+                        'edu-yellow': '#FFD700',  
+                        'edu-brown': '#8B4513',   
+                        'edu-cream': '#FFFDD0',   
+                        'edu-orange': '#FFA500',
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'float-delayed': 'float 3s ease-in-out 1.5s infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(-3%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(139,69,19,0.15)',
+                        'button': '0 6px 0 0 rgba(0,0,0,0.2)',
+                        'button-hover': '0 2px 0 0 rgba(0,0,0,0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #FFFDD0; }
+        ::-webkit-scrollbar-thumb { background: #FFA500; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B4513; }
+
+        /* Background Pattern */
+        .bg-pattern {
+            background-color: #FFFDD0;
+            background-image: radial-gradient(#8B4513 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-attachment: fixed;
+        }
+
+        /* SPA Transition Classes */
+        .app-view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            transform: translateY(20px);
+        }
+        .app-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glass effect for modern cards */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-pattern text-gray-800 font-sans overflow-x-hidden min-h-screen flex flex-col">
+
+    <!-- BGM Player -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    <button id="btnMusicToggle" class="fixed bottom-6 right-6 z-50 bg-edu-orange text-white w-14 h-14 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all flex items-center justify-center text-xl border-4 border-white" title="Mainkan/Hentikan Musik">
+        <i class="fas fa-music"></i>
+        <i class="fas fa-play absolute text-[10px] -bottom-1 -right-1 bg-edu-brown rounded-full p-1 border-2 border-white" id="musicStatusIcon"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-40 top-0 transition-all duration-300 py-4 px-4 lg:px-10" id="navbar">
+        <div class="glass-panel max-w-7xl mx-auto rounded-full px-6 py-3 flex justify-between items-center shadow-soft">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('view-landing')">
+                <div class="bg-edu-orange p-2 rounded-full text-white">
+                    <i class="fas fa-shapes text-xl"></i>
+                </div>
+                <h1 class="font-heading font-bold text-xl text-edu-brown hidden sm:block">Batik Geometri SD</h1>
+            </div>
+
+            <!-- Navbar Links -->
+            <div class="flex space-x-2 sm:space-x-4 items-center">
+                <!-- Only visible when inside a feature -->
+                <button id="navBtnKembali" class="hidden font-bold text-edu-brown hover:bg-edu-yellow px-4 py-2 rounded-full transition-colors flex items-center gap-2" onclick="navigateTo('view-hub')">
+                    <i class="fas fa-arrow-left"></i> <span class="hidden sm:inline">Menu Utama</span>
+                </button>
+                
+                <button class="font-bold text-edu-brown hover:bg-edu-yellow px-4 py-2 rounded-full transition-colors" onclick="navigateTo('view-landing')">Beranda</button>
+                <button class="font-bold text-edu-brown hover:bg-edu-yellow px-4 py-2 rounded-full transition-colors" onclick="navigateTo('view-tentang')">Tentang Media</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow pt-24 pb-12 px-4 lg:px-10 flex flex-col items-center justify-center relative z-10 w-full max-w-7xl mx-auto">
+
+        <!-- ==========================================
+             VIEW 1: LANDING PAGE (HERO)
+        =========================================== -->
+        <section id="view-landing" class="app-view active w-full flex-grow flex items-center justify-center min-h-[80vh]">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+                <!-- Text -->
+                <div class="text-center lg:text-left space-y-6 order-2 lg:order-1">
+                    <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-edu-brown text-edu-brown font-bold shadow-[4px_4px_0px_0px_rgba(139,69,19,1)]">
+                        <i class="fas fa-star text-edu-yellow"></i> Mari Berpetualang!
+                    </div>
+                    <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-edu-brown leading-tight">
+                        Ruang Virtual <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-edu-orange to-edu-brown">Batik Geometri</span> <br>
+                        Indonesia
+                    </h1>
+                    <p class="text-lg lg:text-xl text-gray-700 font-medium glass-panel p-4 rounded-[20px]">
+                        Temukan bentuk-bentuk geometri dalam keindahan batik Nusantara melalui pengalaman belajar yang menyenangkan.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                        <button onclick="navigateTo('view-hub')" class="bg-edu-orange hover:bg-orange-500 text-white font-bold py-4 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-xl flex items-center justify-center gap-2">
+                            <i class="fas fa-rocket"></i> Mulai Belajar
+                        </button>
+                        <button onclick="navigateTo('view-tentang')" class="bg-white hover:bg-gray-50 text-edu-brown border-2 border-edu-brown font-bold py-4 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-xl flex items-center justify-center gap-2">
+                            <i class="fas fa-info-circle"></i> Tentang Media
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Illustration -->
+                <div class="relative flex justify-center items-center order-1 lg:order-2">
+                    <div class="relative w-full max-w-md aspect-square bg-edu-blue/20 rounded-full border-8 border-white shadow-soft flex items-center justify-center overflow-hidden animate-bounce-slight">
+                        <!-- Placeholder Kids Illustration -->
+                        <img src="https://placehold.co/600x600/87CEEB/ffffff?text=Ilustrasi+Anak+Batik\n+%26+Geometri" alt="Ilustrasi Anak SD" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Floating Ornaments -->
+                    <div class="absolute top-10 -left-4 bg-white p-4 rounded-full shadow-lg text-edu-orange text-3xl animate-float"><i class="fas fa-shapes"></i></div>
+                    <div class="absolute bottom-10 -right-4 bg-white p-4 rounded-full shadow-lg text-edu-brown text-3xl animate-float-delayed"><i class="fas fa-palette"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 2: MAIN HUB (3 KARTU MENU)
+        =========================================== -->
+        <section id="view-hub" class="app-view w-full w-full max-w-6xl">
+            <div class="text-center mb-12 mt-8">
+                <h2 class="font-heading text-4xl sm:text-5xl font-bold text-edu-brown mb-4">Pilih Petualanganmu!</h2>
+                <p class="text-xl text-gray-700 font-medium">Pilih salah satu ruang di bawah ini untuk mulai belajar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1: Koleksi Batik -->
+                <div class="glass-panel rounded-[30px] p-8 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-b-8 border-edu-orange group">
+                    <div class="w-24 h-24 bg-edu-orange/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-vr-cardboard text-5xl text-edu-orange"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-edu-brown mb-4">Koleksi Batik</h3>
+                    <p class="text-gray-600 mb-8 flex-grow">Amati keindahan berbagai motif batik Nusantara melalui ruang virtual interaktif.</p>
+                    <button onclick="navigateTo('view-koleksi')" class="w-full bg-edu-orange hover:bg-orange-500 text-white font-bold py-3 px-6 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all">
+                        Lihat Koleksi <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Card 2: Ruang Aktivitas -->
+                <div class="glass-panel rounded-[30px] p-8 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-b-8 border-edu-green group">
+                    <div class="w-24 h-24 bg-edu-green/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-pencil-ruler text-5xl text-edu-green"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-edu-brown mb-4">Ruang Aktivitas</h3>
+                    <p class="text-gray-600 mb-8 flex-grow">Kerjakan berbagai aktivitas dan lembar belajar (LKPD) yang telah disediakan.</p>
+                    <button onclick="navigateTo('view-aktivitas')" class="w-full bg-edu-green hover:bg-green-500 text-white font-bold py-3 px-6 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-shadow">
+                        Mulai Aktivitas <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Card 3: Tantangan Geometri -->
+                <div class="glass-panel rounded-[30px] p-8 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-b-8 border-edu-blue group">
+                    <div class="w-24 h-24 bg-edu-blue/20 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-puzzle-piece text-5xl text-edu-blue"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-edu-brown mb-4">Tantangan Geometri</h3>
+                    <p class="text-gray-600 mb-8 flex-grow">Uji pemahamanmu melalui kuis dan tantangan geometri yang seru.</p>
+                    <button onclick="navigateTo('view-tantangan')" class="w-full bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all">
+                        Mulai Tantangan <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 3: KOLEKSI BATIK (METASTEPS)
+        =========================================== -->
+        <section id="view-koleksi" class="app-view w-full max-w-6xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 mt-4 gap-4">
+                <div>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-edu-brown flex items-center gap-3">
+                        <i class="fas fa-vr-cardboard text-edu-orange"></i> Ruang Virtual Batik
+                    </h2>
+                    <p class="text-gray-700 mt-2">Jelajahi galeri dengan menggeser layar atau menggunakan mouse.</p>
+                </div>
+                <a href="https://metasteps.com/viewer/a1f43d26-a416-4457-9f2f-d03d8d9e85c8?draft=true" target="_blank" class="bg-white border-2 border-edu-orange text-edu-orange hover:bg-edu-orange hover:text-white font-bold py-2 px-6 rounded-full transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap">
+                    <i class="fas fa-external-link-alt"></i> Buka Layar Penuh
+                </a>
+            </div>
+
+            <!-- Iframe Container -->
+            <div class="relative w-full min-h-[700px] rounded-[20px] shadow-soft bg-white border-4 border-white flex justify-center items-center overflow-hidden">
+                <!-- Loader -->
+                <div id="loader-metasteps" class="absolute flex flex-col items-center justify-center z-10">
+                    <i class="fas fa-spinner fa-spin text-5xl text-edu-orange mb-4"></i>
+                    <p class="font-bold text-edu-brown text-lg animate-pulse">Menyiapkan Ruang Virtual...</p>
+                </div>
+                <!-- Embed Iframe -->
+                <iframe 
+                    id="iframe-metasteps"
+                    src="" 
+                    class="absolute inset-0 w-full h-full border-none opacity-0 transition-opacity duration-1000 z-20"
+                    allowfullscreen 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 4: RUANG AKTIVITAS (CANVA)
+        =========================================== -->
+        <section id="view-aktivitas" class="app-view w-full max-w-5xl">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 mt-4 gap-4">
+                <div class="flex-grow">
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-edu-brown flex items-center gap-3">
+                        <i class="fas fa-pencil-ruler text-edu-green"></i> Ruang Aktivitas
+                    </h2>
+                    <p class="text-gray-700 mt-2 max-w-2xl">Setelah mengamati berbagai motif batik, saatnya mengerjakan aktivitas seru untuk menemukan berbagai bentuk geometri yang ada pada batik Nusantara.</p>
+                </div>
+                <div class="flex gap-3 whitespace-nowrap flex-wrap">
+                    <a href="https://canva.link/cnty5cwmu9jvy4w" target="_blank" class="bg-white border-2 border-edu-green text-edu-green hover:bg-edu-green hover:text-white font-bold py-2 px-6 rounded-full transition-colors flex items-center gap-2 shadow-sm">
+                        <i class="fas fa-external-link-alt"></i> Lihat Layar Penuh
+                    </a>
+                    <a href="#" onclick="alert('Fitur Unduh sedang disiapkan!')" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-full transition-colors flex items-center gap-2 shadow-button hover:shadow-button-hover hover:translate-y-1">
+                        <i class="fas fa-download"></i> Unduh Aktivitas
+                    </a>
+                </div>
+            </div>
+
+            <!-- Iframe Container -->
+            <div class="relative w-full h-[800px] rounded-[20px] shadow-soft bg-white border-4 border-white flex justify-center items-center overflow-hidden">
+                <!-- Loader -->
+                <div id="loader-canva" class="absolute flex flex-col items-center justify-center z-10">
+                    <i class="fas fa-spinner fa-spin text-5xl text-edu-green mb-4"></i>
+                    <p class="font-bold text-edu-brown text-lg animate-pulse">Memuat Lembar Aktivitas...</p>
+                </div>
+                <!-- Embed Iframe -->
+                <iframe 
+                    id="iframe-canva"
+                    src="" 
+                    class="absolute inset-0 w-full h-full border-none opacity-0 transition-opacity duration-1000 z-20"
+                    allowfullscreen 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 5: TANTANGAN GEOMETRI (KUIS)
+        =========================================== -->
+        <section id="view-tantangan" class="app-view w-full max-w-4xl">
+            <div class="text-center mb-8 mt-4">
+                <h2 class="font-heading text-3xl sm:text-4xl font-bold text-edu-brown flex justify-center items-center gap-3 mb-2">
+                    <i class="fas fa-puzzle-piece text-edu-blue"></i> Detektif Geometri
+                </h2>
+                <p class="text-gray-700">Ambil kaca pembesarmu! Mari kita selesaikan misi menemukan bentuk-bentuk geometri yang tersembunyi.</p>
+            </div>
+
+            <!-- Quiz Container -->
+            <div class="bg-white rounded-[30px] p-6 sm:p-10 shadow-soft border-4 border-white relative overflow-hidden min-h-[400px]">
+                
+                <!-- START SCREEN -->
+                <div id="quizStartScreen" class="text-center relative z-10 py-10">
+                    <div class="w-32 h-32 mx-auto bg-edu-cream rounded-full flex items-center justify-center border-4 border-edu-blue mb-6 shadow-sm">
+                        <i class="fas fa-search text-6xl text-edu-blue"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-edu-brown mb-2">Misi Siap Dimulai!</h3>
+                    <p class="mb-8 text-gray-600">Jawab pertanyaan dengan tepat untuk mendapatkan lencana spesial.</p>
+                    <button onclick="startQuiz()" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-xl">
+                        Mulai Tantangan <i class="fas fa-play ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- QUESTION SCREEN -->
+                <div id="quizQuestionScreen" class="hidden relative z-10">
+                    <!-- Progress Bar -->
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-edu-brown text-sm" id="quizProgressText">Soal 1 dari 5</span>
+                        <span class="font-bold text-edu-orange text-sm"><i class="fas fa-star"></i> Poin Tantangan</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mb-8 border border-gray-300">
+                        <div id="quizProgressBar" class="bg-edu-green h-full rounded-full transition-all duration-500" style="width: 20%"></div>
+                    </div>
+
+                    <!-- Question Container -->
+                    <div class="bg-edu-cream p-6 rounded-[20px] border-2 border-edu-yellow mb-6">
+                        <h3 class="text-xl sm:text-2xl font-bold text-edu-brown leading-relaxed" id="questionText"></h3>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="optionsContainer">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex justify-between mt-8 border-t-2 border-dashed border-gray-300 pt-6">
+                        <button id="btnPrevQuiz" onclick="prevQuestion()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-full transition-colors hidden">
+                            <i class="fas fa-arrow-left mr-2"></i> Kembali
+                        </button>
+                        <div class="flex-grow"></div>
+                        <button id="btnNextQuiz" onclick="nextQuestion()" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all">
+                            Lanjut <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <button id="btnSubmitQuiz" onclick="submitQuiz()" class="hidden bg-edu-green hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all">
+                            Lihat Hasil <i class="fas fa-check ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RESULT SCREEN -->
+                <div id="quizResultScreen" class="hidden text-center relative z-10 py-6">
+                    <h3 class="font-heading text-3xl font-bold text-edu-brown mb-2">Tantangan Selesai!</h3>
+                    <p class="text-lg text-gray-600 mb-8" id="resultMessage">Hebat! Kamu berhasil menyelesaikan misi.</p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-8">
+                        <div class="bg-edu-cream w-40 h-40 flex flex-col justify-center items-center rounded-full border-4 border-edu-yellow shadow-md transform rotate-3">
+                            <span class="text-gray-500 font-bold text-sm">Skormu</span>
+                            <div class="text-5xl font-heading font-bold text-edu-orange"><span id="finalScore">100</span></div>
+                        </div>
+                        <div class="bg-white w-40 h-40 flex flex-col justify-center items-center rounded-full border-4 border-edu-blue shadow-md">
+                            <span class="text-gray-500 font-bold text-sm">Lencana</span>
+                            <div class="text-5xl mb-1" id="badgeIcon">🏅</div>
+                            <div class="font-bold text-edu-brown text-sm" id="badgeName">Penjelajah</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="startQuiz()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-full transition-colors border-2 border-transparent">
+                            <i class="fas fa-redo mr-2"></i> Ulangi
+                        </button>
+                        <button onclick="navigateTo('view-hub')" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover transition-all">
+                            <i class="fas fa-home mr-2"></i> Kembali ke Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 6: TENTANG MEDIA
+        =========================================== -->
+        <section id="view-tentang" class="app-view w-full max-w-4xl">
+            <div class="glass-panel rounded-[30px] p-8 sm:p-12 shadow-soft flex flex-col md:flex-row gap-10 items-center mt-8">
+                <div class="w-full md:w-1/3 flex justify-center">
+                    <div class="grid grid-cols-2 gap-4 w-full">
+                        <div class="bg-white p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm border-b-4 border-edu-blue">
+                            <i class="fas fa-graduation-cap text-3xl text-edu-blue mb-2"></i>
+                            <span class="text-xs font-bold text-gray-600">Edukasi</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm border-b-4 border-edu-green">
+                            <i class="fas fa-shapes text-3xl text-edu-green mb-2"></i>
+                            <span class="text-xs font-bold text-gray-600">Geometri</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm border-b-4 border-edu-brown">
+                            <i class="fas fa-palette text-3xl text-edu-brown mb-2"></i>
+                            <span class="text-xs font-bold text-gray-600">Batik</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm border-b-4 border-edu-orange">
+                            <i class="fas fa-laptop text-3xl text-edu-orange mb-2"></i>
+                            <span class="text-xs font-bold text-gray-600">Virtual</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3">
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-edu-brown mb-6">Tentang Media</h2>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        Media pembelajaran <strong>Ruang Virtual Batik Geometri Indonesia</strong> dikembangkan untuk membantu siswa Sekolah Dasar memahami konsep Geometri Bangun Datar dengan cara yang tidak membosankan.
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        Dengan memadukan unsur budaya Nusantara melalui motif batik, siswa diajak mengeksplorasi matematika dalam kehidupan nyata melalui galeri virtual, lembar kerja interaktif, dan kuis yang dikemas seperti permainan anak.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-edu-brown text-edu-cream py-6 text-center z-10 relative">
+        <p class="font-bold">© 2026 Ruang Virtual Batik Geometri Indonesia.</p>
+        <p class="text-xs mt-1 opacity-80">Didesain khusus untuk pembelajaran interaktif Anak SD.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Data Kuis
+        const CONFIG_KUIS = [
+            {
+                pertanyaan: "Bentuk geometri apa yang paling banyak ditemukan pada motif batik Kawung?",
+                pilihan: ["A. Segitiga", "B. Persegi", "C. Lingkaran / Oval", "D. Trapesium"],
+                jawabanBenar: 2 
+            },
+            {
+                pertanyaan: "Pada motif Tumpal (Pinggiran Batik), bentuk bangun datar apa yang berjejer seperti gigi?",
+                pilihan: ["A. Segitiga", "B. Lingkaran", "C. Persegi Panjang", "D. Belah Ketupat"],
+                jawabanBenar: 0 
+            },
+            {
+                pertanyaan: "Motif Ceplok seringkali menggunakan pola simetris berulang yang tersusun dari bentuk...",
+                pilihan: ["A. Tak beraturan", "B. Persegi dan Poligon", "C. Hanya lingkaran", "D. Garis lengkung bebas"],
+                jawabanBenar: 1 
+            }
+        ];
+
+        // --- SISTEM SPA (Single Page Application) ---
+        let currentView = 'view-landing';
+        let iframesLoaded = { metasteps: false, canva: false };
+
+        function navigateTo(targetId) {
+            if (currentView === targetId) return;
+
+            const currentEl = document.getElementById(currentView);
+            const targetEl = document.getElementById(targetId);
+
+            // Fade out current
+            currentEl.style.opacity = '0';
+            currentEl.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                currentEl.classList.remove('active');
+                targetEl.classList.add('active');
+                
+                // Force reflow
+                void targetEl.offsetWidth;
+                
+                // Fade in new
+                targetEl.style.opacity = '1';
+                targetEl.style.transform = 'translateY(0)';
+                currentView = targetId;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Update Navbar Visibility
+                updateNavbar(targetId);
+
+                // Load Iframes if entering those views
+                checkAndLoadIframes(targetId);
+
+            }, 400); // 400ms matches css transition
+        }
+
+        function updateNavbar(viewId) {
+            const btnKembali = document.getElementById('navBtnKembali');
+            // Jika berada di dalam fitur, tampilkan tombol kembali ke menu utama
+            if (['view-koleksi', 'view-aktivitas', 'view-tantangan'].includes(viewId)) {
+                btnKembali.classList.remove('hidden');
+            } else {
+                btnKembali.classList.add('hidden');
+            }
+        }
+
+        function checkAndLoadIframes(viewId) {
+            // Lazy load iframes only when user navigates to them
+            if (viewId === 'view-koleksi' && !iframesLoaded.metasteps) {
+                const iframe = document.getElementById('iframe-metasteps');
+                iframe.src = "https://metasteps.com/viewer/a1f43d26-a416-4457-9f2f-d03d8d9e85c8?draft=true";
+                iframe.onload = () => {
+                    document.getElementById('loader-metasteps').style.display = 'none';
+                    iframe.style.opacity = '1';
+                    iframesLoaded.metasteps = true;
+                };
+            }
+
+            if (viewId === 'view-aktivitas' && !iframesLoaded.canva) {
+                const iframe = document.getElementById('iframe-canva');
+                // Menggunakan link Canva yang disediakan
+                iframe.src = "https://canva.link/cnty5cwmu9jvy4w";
+                iframe.onload = () => {
+                    document.getElementById('loader-canva').style.display = 'none';
+                    iframe.style.opacity = '1';
+                    iframesLoaded.canva = true;
+                };
+            }
+        }
+
+        // --- SISTEM KUIS ---
+        let currentQuizIndex = 0;
+        let userAnswers = [];
+
+        function startQuiz() {
+            currentQuizIndex = 0;
+            userAnswers = new Array(CONFIG_KUIS.length).fill(null);
+            
+            document.getElementById('quizStartScreen').classList.add('hidden');
+            document.getElementById('quizResultScreen').classList.add('hidden');
+            document.getElementById('quizQuestionScreen').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQ = CONFIG_KUIS[currentQuizIndex];
+            
+            // Progress
+            document.getElementById('quizProgressText').textContent = `Soal ${currentQuizIndex + 1} dari ${CONFIG_KUIS.length}`;
+            const progressPercent = ((currentQuizIndex + 1) / CONFIG_KUIS.length) * 100;
+            document.getElementById('quizProgressBar').style.width = `${progressPercent}%`;
+
+            // Text
+            document.getElementById('questionText').textContent = currentQ.pertanyaan;
+
+            // Options
+            const optsContainer = document.getElementById('optionsContainer');
+            optsContainer.innerHTML = '';
+            
+            currentQ.pilihan.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                const isSelected = userAnswers[currentQuizIndex] === index;
+                
+                btn.className = `text-left p-4 rounded-[15px] border-2 font-bold transition-all shadow-sm ${isSelected ? 'bg-edu-yellow border-edu-brown text-edu-brown shadow-inner' : 'bg-white border-gray-200 text-gray-700 hover:border-edu-blue hover:bg-blue-50'}`;
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    userAnswers[currentQuizIndex] = index;
+                    loadQuestion(); // reload buttons state
+                };
+                optsContainer.appendChild(btn);
+            });
+
+            // Buttons
+            document.getElementById('btnPrevQuiz').classList.toggle('hidden', currentQuizIndex === 0);
+            
+            if (currentQuizIndex === CONFIG_KUIS.length - 1) {
+                document.getElementById('btnNextQuiz').classList.add('hidden');
+                document.getElementById('btnSubmitQuiz').classList.remove('hidden');
+            } else {
+                document.getElementById('btnNextQuiz').classList.remove('hidden');
+                document.getElementById('btnSubmitQuiz').classList.add('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuizIndex] === null) {
+                // Shake if not answered
+                const opts = document.getElementById('optionsContainer');
+                opts.classList.add('animate-bounce-slight');
+                setTimeout(() => opts.classList.remove('animate-bounce-slight'), 500);
+                return;
+            }
+            if (currentQuizIndex < CONFIG_KUIS.length - 1) {
+                currentQuizIndex++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                loadQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            if (userAnswers.includes(null)) return; // Prevents submit if not complete
+
+            let correct = 0;
+            userAnswers.forEach((ans, i) => { if (ans === CONFIG_KUIS[i].jawabanBenar) correct++; });
+            const score = Math.round((correct / CONFIG_KUIS.length) * 100);
+
+            document.getElementById('quizQuestionScreen').classList.add('hidden');
+            document.getElementById('quizResultScreen').classList.remove('hidden');
+            
+            // Score animation
+            const scoreEl = document.getElementById('finalScore');
+            let counter = 0;
+            const timer = setInterval(() => {
+                counter += 2;
+                if (counter >= score) {
+                    counter = score;
+                    clearInterval(timer);
+                }
+                scoreEl.textContent = counter;
+            }, 20);
+
+            if (score > 80) {
+                document.getElementById('badgeIcon').textContent = '🏆';
+                document.getElementById('badgeName').textContent = 'Ahli Geometri';
+            } else {
+                document.getElementById('badgeIcon').textContent = '🏅';
+                document.getElementById('badgeName').textContent = 'Penjelajah';
+            }
+        }
+
+        // --- SISTEM AUDIO ---
+        let isMusicPlaying = false;
+        document.getElementById('btnMusicToggle').addEventListener('click', () => {
+            const audio = document.getElementById('bgMusic');
+            const iconStatus = document.getElementById('musicStatusIcon');
+            const btn = document.getElementById('btnMusicToggle');
+            
+            audio.volume = 0.2; // Soft volume
+
+            if (isMusicPlaying) {
+                audio.pause();
+                iconStatus.classList.replace('fa-pause', 'fa-play');
+                btn.classList.replace('bg-edu-blue', 'bg-edu-orange');
+            } else {
+                audio.play();
+                iconStatus.classList.replace('fa-play', 'fa-pause');
+                btn.classList.replace('bg-edu-orange', 'bg-edu-blue');
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+
+    </script>
+</body>
+</html>
