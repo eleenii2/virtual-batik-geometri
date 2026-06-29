@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,7 +26,7 @@
                 extend: {
                     fontFamily: {
                         'sans': ['Quicksand', 'sans-serif'],
-                        'heading': ['Fredoka', 'sans-serif'],
+                        'heading': ['"Baloo 2"', 'sans-serif'],
                     },
                     colors: {
                         'edu-blue': '#87CEEB',    
@@ -40,6 +40,7 @@
                         'float': 'float 3s ease-in-out infinite',
                         'float-delayed': 'float 3s ease-in-out 1.5s infinite',
                         'bounce-slight': 'bounceSlight 2s infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         float: {
@@ -91,7 +92,6 @@
             opacity: 1;
             transform: scale(1) translateY(0);
             width: 100%;
-            /* Mengizinkan scroll dengan menyesuaikan min-height */
             min-height: calc(100vh - 100px);
             height: auto;
             padding-bottom: 2rem;
@@ -106,7 +106,7 @@
 
         /* Iframe wrappers */
         .iframe-wrapper {
-            height: calc(100vh - 16rem);
+            height: calc(100vh - 18rem);
             min-height: 400px;
         }
 
@@ -122,6 +122,14 @@
             transform: scale(1);
             opacity: 1;
             pointer-events: auto;
+        }
+        
+        /* Interactive Cards Enhancements */
+        .card-geometric-bg {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -147,9 +155,8 @@
         <i class="fas fa-robot"></i>
     </button>
 
-    <!-- Panel Chat AI (Tersembunyi secara default) -->
+    <!-- Panel Chat AI -->
     <div id="aiChatPanel" class="fixed bottom-24 right-6 w-80 max-w-[calc(100vw-3rem)] bg-white rounded-[20px] shadow-2xl z-50 flex flex-col border-4 border-edu-blue chat-container overflow-hidden h-[400px]">
-        <!-- Header -->
         <div class="bg-edu-blue text-white p-3 flex justify-between items-center shrink-0">
             <div class="flex items-center gap-2 font-heading font-bold">
                 <i class="fas fa-robot text-edu-yellow text-xl"></i>
@@ -159,15 +166,11 @@
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-        
-        <!-- Chat Area -->
         <div id="chatMessages" class="flex-grow p-4 overflow-y-auto flex flex-col gap-3 bg-edu-cream text-sm">
             <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-200 text-gray-700 max-w-[85%] self-start">
-                Halo! Aku Guru AI. Ada yang ingin kamu tanyakan tentang geometri atau batik? 😊
+                Halo! Aku Guru AI. Ada yang ingin kamu tanyakan tentang geometri atau batik? 😊 (Aku hanya bisa jawab soal pelajaran ya!)
             </div>
         </div>
-
-        <!-- Input Area -->
         <div class="p-3 bg-white border-t-2 border-gray-100 flex gap-2 shrink-0">
             <input type="text" id="chatInput" class="flex-grow bg-gray-100 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-edu-blue text-sm" placeholder="Ketik pertanyaanmu...">
             <button id="btnSendChat" class="bg-edu-orange hover:bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors">
@@ -176,265 +179,209 @@
         </div>
     </div>
 
-    <!-- Notifikasi Toast (Pengganti Alert) -->
-    <div id="toastNotification" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-edu-brown text-white px-6 py-3 rounded-full shadow-lg z-50 transition-all duration-300 opacity-0 pointer-events-none scale-90 flex items-center gap-3 font-bold">
-        <i class="fas fa-info-circle text-edu-yellow"></i>
-        <span id="toastMessage">Pesan Notifikasi</span>
+    <!-- Notifikasi Toast -->
+    <div id="toastNotification" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-edu-brown text-white px-6 py-3 rounded-[20px] shadow-2xl z-50 transition-all duration-300 opacity-0 pointer-events-none scale-90 flex flex-col md:flex-row items-center gap-3 font-bold max-w-[90vw] text-center border-4 border-edu-yellow">
+        <i class="fas fa-bell text-edu-yellow text-2xl"></i>
+        <span id="toastMessage" class="text-sm md:text-base">Pesan Notifikasi</span>
     </div>
 
     <!-- Navigation -->
     <nav class="fixed w-full z-40 top-0 transition-all duration-300 py-4 px-4 lg:px-10" id="navbar">
-        <div class="glass-panel max-w-7xl mx-auto rounded-full px-6 py-3 flex justify-between items-center shadow-soft">
+        <div class="glass-panel max-w-7xl mx-auto rounded-full px-6 py-3 flex justify-between items-center shadow-soft border-b-4 border-edu-orange">
             <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('view-landing')">
-                <div class="bg-edu-orange p-2 rounded-full text-white">
+                <div class="bg-edu-orange p-2 rounded-full text-white animate-bounce-slight">
                     <i class="fas fa-shapes text-xl"></i>
                 </div>
                 <h1 class="font-heading font-bold text-xl text-edu-brown hidden sm:block">Batik Geometri SD</h1>
             </div>
-
-            <!-- Navbar Links -->
-            <div class="flex space-x-2 sm:space-x-4 items-center">
-                <!-- Only visible when inside a feature -->
-                <button id="navBtnKembali" class="hidden font-bold text-edu-brown hover:bg-edu-yellow px-4 py-2 rounded-full transition-colors flex items-center gap-2" onclick="navigateTo('view-hub')">
+            <div class="flex space-x-1 sm:space-x-2 md:space-x-4 items-center">
+                <button id="navBtnKembali" class="hidden font-bold text-edu-brown hover:bg-edu-yellow px-3 sm:px-4 py-2 rounded-full transition-colors flex items-center gap-2 border-2 border-transparent hover:border-edu-brown text-sm sm:text-base" onclick="navigateTo('view-hub')">
                     <i class="fas fa-arrow-left"></i> <span class="hidden sm:inline">Menu Utama</span>
                 </button>
+                <button class="font-bold text-edu-brown hover:bg-edu-yellow px-3 sm:px-4 py-2 rounded-full transition-colors text-sm sm:text-base" onclick="navigateTo('view-landing')">Beranda</button>
+                <button class="font-bold text-edu-brown hover:bg-edu-yellow px-3 sm:px-4 py-2 rounded-full transition-colors text-sm sm:text-base" onclick="navigateTo('view-tentang')">Tentang</button>
                 
-                <button class="font-bold text-edu-brown hover:bg-edu-yellow px-4 py-2 rounded-full transition-colors" onclick="navigateTo('view-landing')">Beranda</button>
-                <button class="font-bold text-edu-brown hover:bg-edu-yellow px-4 py-2 rounded-full transition-colors" onclick="navigateTo('view-tentang')">Tentang</button>
+                <!-- Tombol Modul Ajar Guru di Navbar -->
+                <a href="https://drive.google.com/file/d/18zTwARgpbNOyEbPt-xHmLu6hRArZEDlO/preview" target="_blank" title="Buka Modul Ajar untuk Guru" class="group font-bold bg-white text-edu-brown border-2 border-edu-orange hover:bg-edu-orange hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all flex items-center gap-1.5 sm:gap-2 shadow-sm text-xs sm:text-sm ml-1 sm:ml-2">
+                    <i class="fas fa-chalkboard-teacher text-edu-orange group-hover:text-white transition-colors text-sm sm:text-base"></i> <span>Modul Ajar</span>
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- MAIN APP CONTAINER -->
-    <main class="pt-20 px-4 lg:px-10 flex flex-col items-center justify-start relative z-10 w-full max-w-7xl mx-auto flex-grow min-h-screen pb-24 overflow-visible">
+    <main class="pt-24 px-4 lg:px-10 flex flex-col items-center justify-start relative z-10 w-full max-w-7xl mx-auto flex-grow min-h-screen pb-24 overflow-visible">
 
         <!-- ==========================================
              VIEW 1: LANDING PAGE (HERO)
         =========================================== -->
-        <section id="view-landing" class="app-view active max-w-6xl">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full min-h-[80vh]">
-                <!-- Text -->
-                <div class="text-center lg:text-left space-y-4 sm:space-y-6 order-2 lg:order-1">
-                    <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-edu-brown text-edu-brown font-bold shadow-[4px_4px_0px_0px_rgba(139,69,19,1)]">
+        <section id="view-landing" class="app-view active max-w-6xl w-full">
+            <div class="flex flex-col items-center justify-center text-center gap-6 sm:gap-8 w-full min-h-[80vh] py-10">
+                <!-- Text Section -->
+                <div class="space-y-4 sm:space-y-6 max-w-3xl flex flex-col items-center">
+                    <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-edu-brown text-edu-brown font-bold shadow-[4px_4px_0px_0px_rgba(139,69,19,1)] animate-bounce-slight">
                         <i class="fas fa-star text-edu-yellow"></i> Mari Berpetualang!
                     </div>
-                    <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-edu-brown leading-tight">
+                    <h1 class="font-heading text-4xl sm:text-5xl lg:text-7xl font-extrabold text-edu-brown leading-tight drop-shadow-md">
                         Ruang Virtual <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-edu-orange to-edu-brown">Batik Geometri</span> <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-edu-orange to-red-500">Batik Geometri</span> <br>
                         Indonesia
                     </h1>
-                    <p class="text-sm sm:text-base lg:text-lg text-gray-700 font-medium glass-panel p-4 rounded-[20px] max-w-lg mx-auto lg:mx-0">
+                    <p class="text-sm sm:text-base lg:text-lg text-gray-700 font-medium glass-panel p-4 rounded-[20px] max-w-2xl mx-auto shadow-sm border-t-4 border-edu-blue">
                         Temukan bentuk-bentuk geometri dalam keindahan batik Nusantara melalui pengalaman belajar yang menyenangkan.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
-                        <button onclick="navigateTo('view-hub')" class="bg-edu-orange hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-xl flex items-center justify-center gap-2">
-                            <i class="fas fa-rocket"></i> Mulai Belajar
-                        </button>
-                    </div>
                 </div>
 
-                <!-- Illustration -->
-                <div class="relative flex justify-center items-center order-1 lg:order-2 h-auto lg:h-full w-full py-4 sm:py-8">
-                    <div class="relative w-full max-w-sm sm:max-w-md lg:max-w-lg aspect-[4/3] bg-edu-blue/20 rounded-[30px] border-8 border-white shadow-soft flex items-center justify-center overflow-hidden animate-bounce-slight group cursor-pointer">
-                        <!-- Ilustrasi Vektor SVG Animasi -->
-                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                            <defs>
-                                <!-- Background Gradient -->
-                                <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#E0F7FA" />
-                                    <stop offset="100%" stop-color="#FFFDD0" />
-                                </linearGradient>
-                                
-                                <!-- Batik Kawung Pattern -->
-                                <pattern id="kawung" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                                    <ellipse cx="30" cy="15" rx="8" ry="15" fill="#8B4513" opacity="0.1" />
-                                    <ellipse cx="30" cy="45" rx="8" ry="15" fill="#8B4513" opacity="0.1" />
-                                    <ellipse cx="15" cy="30" rx="15" ry="8" fill="#8B4513" opacity="0.1" />
-                                    <ellipse cx="45" cy="30" rx="15" ry="8" fill="#8B4513" opacity="0.1" />
-                                    <circle cx="30" cy="30" r="4" fill="#8B4513" opacity="0.15" />
-                                </pattern>
-
-                                <!-- Filters -->
-                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#8B4513" flood-opacity="0.15"/>
-                                </filter>
-                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feGaussianBlur stdDeviation="3" result="blur" />
-                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                </filter>
-                            </defs>
-
-                            <!-- Background Layer -->
-                            <rect width="100%" height="100%" fill="url(#bgGrad)" />
-                            <rect width="100%" height="100%" fill="url(#kawung)" />
-
-                            <!-- Virtual Grid Base -->
-                            <g opacity="0.3">
-                                <path d="M -50 250 L 200 220 L 450 250 L 200 280 Z" fill="none" stroke="#87CEEB" stroke-width="2" />
-                                <path d="M 0 265 L 200 235 L 400 265" fill="none" stroke="#87CEEB" stroke-width="1" />
-                                <path d="M 100 235 L 200 280 L 300 235" fill="none" stroke="#87CEEB" stroke-width="1" />
-                                <ellipse cx="200" cy="250" rx="140" ry="30" fill="url(#bgGrad)" />
-                                <ellipse cx="200" cy="250" rx="140" ry="30" fill="none" stroke="#87CEEB" stroke-width="2" stroke-dasharray="10,5" />
+                <!-- Image Section -->
+                <div class="relative w-full max-w-[280px] sm:max-w-[400px] aspect-[4/3] bg-gradient-to-br from-edu-blue/40 to-edu-green/40 rounded-[40px] border-8 border-white shadow-soft flex items-center justify-center overflow-hidden animate-bounce-slight group cursor-pointer my-4">
+                    <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <defs>
+                            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#E0F7FA" />
+                                <stop offset="100%" stop-color="#FFFDD0" />
+                            </linearGradient>
+                            <pattern id="kawung" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                <ellipse cx="30" cy="15" rx="8" ry="15" fill="#8B4513" opacity="0.1" />
+                                <ellipse cx="30" cy="45" rx="8" ry="15" fill="#8B4513" opacity="0.1" />
+                                <ellipse cx="15" cy="30" rx="15" ry="8" fill="#8B4513" opacity="0.1" />
+                                <ellipse cx="45" cy="30" rx="15" ry="8" fill="#8B4513" opacity="0.1" />
+                                <circle cx="30" cy="30" r="4" fill="#8B4513" opacity="0.15" />
+                            </pattern>
+                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#8B4513" flood-opacity="0.15"/>
+                            </filter>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#bgGrad)" />
+                        <rect width="100%" height="100%" fill="url(#kawung)" />
+                        <g opacity="0.3">
+                            <path d="M -50 250 L 200 220 L 450 250 L 200 280 Z" fill="none" stroke="#87CEEB" stroke-width="2" />
+                            <path d="M 0 265 L 200 235 L 400 265" fill="none" stroke="#87CEEB" stroke-width="1" />
+                            <path d="M 100 235 L 200 280 L 300 235" fill="none" stroke="#87CEEB" stroke-width="1" />
+                            <ellipse cx="200" cy="250" rx="140" ry="30" fill="url(#bgGrad)" />
+                            <ellipse cx="200" cy="250" rx="140" ry="30" fill="none" stroke="#87CEEB" stroke-width="2" stroke-dasharray="10,5" />
+                        </g>
+                        <g transform="translate(135, 75)" filter="url(#shadow)">
+                            <rect x="52" y="100" width="10" height="40" fill="#e2b08a" rx="5" />
+                            <rect x="70" y="100" width="10" height="40" fill="#e2b08a" rx="5" />
+                            <rect x="52" y="125" width="10" height="15" fill="#ffffff" />
+                            <rect x="70" y="125" width="10" height="15" fill="#ffffff" />
+                            <path d="M 45 140 h 17 v 10 a 5 5 0 0 1 -17 0 z" fill="#333" />
+                            <path d="M 63 140 h 17 v 10 a 5 5 0 0 1 -17 0 z" fill="#333" />
+                            <path d="M 42 85 h 48 v 20 a 5 5 0 0 1 -5 0 h -10 v -10 h -2 v 10 h -26 a 5 5 0 0 1 -5 0 z" fill="#C62828" />
+                            <rect x="44" y="82" width="44" height="4" fill="#111" />
+                            <rect x="63" y="81" width="6" height="6" fill="#FFD700" />
+                            <path d="M 40 45 h 52 l 5 40 h -62 z" fill="#ffffff" />
+                            <path d="M 61 45 l 5 25 l 5 -25 z" fill="#C62828" />
+                            <path d="M 40 50 Q -10 -10 -20 20" fill="none" stroke="#e2b08a" stroke-width="9" stroke-linecap="round" />
+                            <circle cx="-20" cy="20" r="5" fill="#e2b08a" />
+                            <path d="M 40 45 l -15 -5 l -5 15 l 20 5 z" fill="#ffffff" />
+                            <path d="M 92 50 Q 110 70 90 85" fill="none" stroke="#e2b08a" stroke-width="9" stroke-linecap="round" />
+                            <circle cx="90" cy="85" r="5" fill="#e2b08a" />
+                            <path d="M 92 45 l 10 5 l -5 15 l -15 -5 z" fill="#ffffff" />
+                            <rect x="61" y="32" width="10" height="15" fill="#c9946e" />
+                            <circle cx="66" cy="18" r="24" fill="#e2b08a" />
+                            <path d="M 58 30 Q 66 36 74 30" fill="none" stroke="#a06040" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M 36 0 h 60 a 10 10 0 0 1 0 15 h -60 z" fill="#C62828" />
+                            <path d="M 36 15 C 20 15 20 -2 36 -2" fill="#C62828" />
+                            <circle cx="66" cy="7" r="3" fill="#ffffff" />
+                            <rect x="42" y="10" width="48" height="18" rx="4" fill="#37474F" />
+                            <rect x="44" y="12" width="44" height="14" rx="3" fill="#1E88E5" />
+                            <rect x="48" y="15" width="16" height="8" rx="2" fill="#81D4FA" filter="url(#glow)" />
+                            <rect x="68" y="15" width="16" height="8" rx="2" fill="#81D4FA" filter="url(#glow)" />
+                            <path d="M 38 18 H 42 V 14 H 38 Z" fill="#263238" />
+                            <path d="M 90 18 H 94 V 14 H 90 Z" fill="#263238" />
+                        </g>
+                        <g transform="translate(60, 50)" filter="url(#shadow)">
+                            <animateTransform attributeName="transform" type="translate" values="60,50; 60,40; 60,50" dur="3s" repeatCount="indefinite" />
+                            <circle cx="30" cy="50" r="18" fill="#90EE90" opacity="0.9" />
+                            <circle cx="25" cy="45" r="4" fill="#ffffff" opacity="0.6" />
+                            <polygon points="10,-20 30,15 -10,15" fill="#FFD700" transform="rotate(15)" />
+                            <polygon points="10,-20 10,15 -10,15" fill="#FFE24D" transform="rotate(15)" />
+                        </g>
+                        <g transform="translate(260, 40)" filter="url(#shadow)">
+                            <animateTransform attributeName="transform" type="translate" values="260,40; 260,55; 260,40" dur="4s" repeatCount="indefinite" />
+                            <polygon points="30,0 60,30 30,60 0,30" fill="#FFA500" />
+                            <polygon points="30,0 60,30 30,30" fill="#FFB732" />
+                            <polygon points="30,30 60,30 30,60" fill="#FF8C00" />
+                            <g transform="translate(60, 60) scale(0.8)">
+                                <path d="M 20 0 L 40 10 L 40 30 L 20 40 L 0 30 L 0 10 Z" fill="#87CEEB" />
+                                <path d="M 20 0 L 40 10 L 20 20 L 0 10 Z" fill="#E0F7FA" />
+                                <path d="M 0 10 L 20 20 L 20 40 L 0 30 Z" fill="#4CA1AF" />
                             </g>
-
-                            <!-- Student Character (SD Boy in VR) -->
-                            <g transform="translate(135, 75)" filter="url(#shadow)">
-                                <!-- Legs & Shoes -->
-                                <rect x="52" y="100" width="10" height="40" fill="#e2b08a" rx="5" />
-                                <rect x="70" y="100" width="10" height="40" fill="#e2b08a" rx="5" />
-                                <rect x="52" y="125" width="10" height="15" fill="#ffffff" />
-                                <rect x="70" y="125" width="10" height="15" fill="#ffffff" />
-                                <path d="M 45 140 h 17 v 10 a 5 5 0 0 1 -17 0 z" fill="#333" />
-                                <path d="M 63 140 h 17 v 10 a 5 5 0 0 1 -17 0 z" fill="#333" />
-
-                                <!-- Shorts (Red SD uniform) -->
-                                <path d="M 42 85 h 48 v 20 a 5 5 0 0 1 -5 0 h -10 v -10 h -2 v 10 h -26 a 5 5 0 0 1 -5 0 z" fill="#C62828" />
-                                <rect x="44" y="82" width="44" height="4" fill="#111" />
-                                <rect x="63" y="81" width="6" height="6" fill="#FFD700" />
-
-                                <!-- Shirt (White) & Tie -->
-                                <path d="M 40 45 h 52 l 5 40 h -62 z" fill="#ffffff" />
-                                <path d="M 61 45 l 5 25 l 5 -25 z" fill="#C62828" />
-                                
-                                <!-- Left Arm -->
-                                <path d="M 40 50 Q -10 -10 -20 20" fill="none" stroke="#e2b08a" stroke-width="9" stroke-linecap="round" />
-                                <circle cx="-20" cy="20" r="5" fill="#e2b08a" />
-                                <path d="M 40 45 l -15 -5 l -5 15 l 20 5 z" fill="#ffffff" />
-
-                                <!-- Right Arm -->
-                                <path d="M 92 50 Q 110 70 90 85" fill="none" stroke="#e2b08a" stroke-width="9" stroke-linecap="round" />
-                                <circle cx="90" cy="85" r="5" fill="#e2b08a" />
-                                <path d="M 92 45 l 10 5 l -5 15 l -15 -5 z" fill="#ffffff" />
-
-                                <!-- Head, Hat & Smile -->
-                                <rect x="61" y="32" width="10" height="15" fill="#c9946e" />
-                                <circle cx="66" cy="18" r="24" fill="#e2b08a" />
-                                <path d="M 58 30 Q 66 36 74 30" fill="none" stroke="#a06040" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M 36 0 h 60 a 10 10 0 0 1 0 15 h -60 z" fill="#C62828" />
-                                <path d="M 36 15 C 20 15 20 -2 36 -2" fill="#C62828" />
-                                <circle cx="66" cy="7" r="3" fill="#ffffff" />
-
-                                <!-- VR Headset -->
-                                <rect x="42" y="10" width="48" height="18" rx="4" fill="#37474F" />
-                                <rect x="44" y="12" width="44" height="14" rx="3" fill="#1E88E5" />
-                                <rect x="48" y="15" width="16" height="8" rx="2" fill="#81D4FA" filter="url(#glow)" />
-                                <rect x="68" y="15" width="16" height="8" rx="2" fill="#81D4FA" filter="url(#glow)" />
-                                <path d="M 38 18 H 42 V 14 H 38 Z" fill="#263238" />
-                                <path d="M 90 18 H 94 V 14 H 90 Z" fill="#263238" />
-                            </g>
-
-                            <!-- Animated Floating Geometric Elements -->
-                            
-                            <!-- Group 1: Circle & Triangle -->
-                            <g transform="translate(60, 50)" filter="url(#shadow)">
-                                <animateTransform attributeName="transform" type="translate" values="60,50; 60,40; 60,50" dur="3s" repeatCount="indefinite" />
-                                <!-- Green Kawung Element (Circle/Ellipse) -->
-                                <circle cx="30" cy="50" r="18" fill="#90EE90" opacity="0.9" />
-                                <circle cx="25" cy="45" r="4" fill="#ffffff" opacity="0.6" />
-                                <!-- Yellow Tumpal (Triangle) -->
-                                <polygon points="10,-20 30,15 -10,15" fill="#FFD700" transform="rotate(15)" />
-                                <polygon points="10,-20 10,15 -10,15" fill="#FFE24D" transform="rotate(15)" />
-                                <path d="M 40 40 Q 60 70 80 80" fill="none" stroke="#FFD700" stroke-width="2" stroke-dasharray="4,4" opacity="0.5">
-                                   <animate attributeName="stroke-dashoffset" from="16" to="0" dur="1s" repeatCount="indefinite" />
-                                </path>
-                            </g>
-
-                            <!-- Group 2: Hexagon & Square -->
-                            <g transform="translate(260, 40)" filter="url(#shadow)">
-                                <animateTransform attributeName="transform" type="translate" values="260,40; 260,55; 260,40" dur="4s" repeatCount="indefinite" />
-                                <!-- Orange Ceplok Element -->
-                                <polygon points="30,0 60,30 30,60 0,30" fill="#FFA500" />
-                                <polygon points="30,0 60,30 30,30" fill="#FFB732" />
-                                <polygon points="30,30 60,30 30,60" fill="#FF8C00" />
-                                <!-- Blue 3D Cube -->
-                                <g transform="translate(60, 60) scale(0.8)">
-                                    <path d="M 20 0 L 40 10 L 40 30 L 20 40 L 0 30 L 0 10 Z" fill="#87CEEB" />
-                                    <path d="M 20 0 L 40 10 L 20 20 L 0 10 Z" fill="#E0F7FA" />
-                                    <path d="M 0 10 L 20 20 L 20 40 L 0 30 Z" fill="#4CA1AF" />
-                                </g>
-                            </g>
-
-                            <!-- Virtual Floating Panels -->
-                            <g transform="translate(140, 20)" opacity="0.8">
-                                <animateTransform attributeName="transform" type="translate" values="140,20; 140,15; 140,20" dur="2.5s" repeatCount="indefinite" />
-                                <rect x="0" y="0" width="70" height="30" rx="8" fill="white" opacity="0.9" filter="url(#shadow)"/>
-                                <circle cx="12" cy="15" r="5" fill="#FFA500" />
-                                <rect x="25" y="11" width="35" height="3" rx="1.5" fill="#d1d5db" />
-                                <rect x="25" y="17" width="20" height="3" rx="1.5" fill="#d1d5db" />
-                            </g>
-
-                            <g transform="translate(230, 130)" opacity="0.8">
-                                <animateTransform attributeName="transform" type="translate" values="230,130; 235,125; 230,130" dur="3.5s" repeatCount="indefinite" />
-                                <rect x="0" y="0" width="50" height="40" rx="6" fill="white" opacity="0.8" filter="url(#shadow)"/>
-                                <circle cx="25" cy="20" r="10" fill="none" stroke="#90EE90" stroke-width="2" />
-                                <polygon points="25,10 35,20 25,30 15,20" fill="none" stroke="#FFD700" stroke-width="2" />
-                            </g>
-
-                            <!-- Decorative Sparkles -->
-                            <g fill="#FFD700">
-                                <path d="M 50 180 l 3 -10 l 3 10 l 10 3 l -10 3 l -3 10 l -3 -10 l -10 -3 z">
-                                    <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite" />
-                                </path>
-                                <path d="M 330 100 l 2 -6 l 2 6 l 6 2 l -6 2 l -2 6 l -2 -6 l -6 -2 z" fill="#87CEEB">
-                                    <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
-                                </path>
-                                <path d="M 100 230 l 2 -6 l 2 6 l 6 2 l -6 2 l -2 6 l -2 -6 l -6 -2 z" fill="#FFA500">
-                                    <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite" />
-                                </path>
-                            </g>
-                        </svg>
-                    </div>
-                    <!-- Floating Ornaments -->
-                    <div class="absolute top-0 sm:top-10 -left-2 sm:-left-6 bg-white p-3 sm:p-4 rounded-full shadow-lg text-edu-orange text-2xl sm:text-3xl animate-float"><i class="fas fa-shapes"></i></div>
-                    <div class="absolute bottom-0 sm:bottom-10 -right-2 sm:-right-6 bg-white p-3 sm:p-4 rounded-full shadow-lg text-edu-brown text-2xl sm:text-3xl animate-float-delayed"><i class="fas fa-palette"></i></div>
+                        </g>
+                    </svg>
+                </div>
+                <div class="absolute top-0 sm:top-10 -left-2 sm:-left-6 bg-white p-3 sm:p-4 rounded-full shadow-lg text-edu-orange text-2xl sm:text-3xl animate-float border-2 border-edu-orange"><i class="fas fa-shapes"></i></div>
+                <div class="absolute bottom-0 sm:bottom-10 -right-2 sm:-right-6 bg-white p-3 sm:p-4 rounded-full shadow-lg text-edu-brown text-2xl sm:text-3xl animate-float-delayed border-2 border-edu-brown"><i class="fas fa-palette"></i></div>
+                
+                <!-- Button -->
+                <div>
+                    <button onclick="navigateTo('view-hub')" class="bg-edu-orange hover:bg-orange-500 text-white font-bold py-3 px-10 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-xl flex items-center justify-center gap-2 border-2 border-white">
+                        <i class="fas fa-rocket"></i> Mulai Belajar
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- ==========================================
-             VIEW 2: MAIN HUB (3 KARTU MENU)
+             VIEW 2: MAIN HUB (3 KARTU MENU DIPERBARUI)
         =========================================== -->
         <section id="view-hub" class="app-view w-full max-w-6xl">
             <div class="flex flex-col h-full justify-center">
-                <div class="text-center mb-6">
-                    <h2 class="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-edu-brown mb-2">Pilih Petualanganmu!</h2>
+                <div class="text-center mb-8">
+                    <h2 class="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-edu-brown mb-2 drop-shadow-sm">Pilih Petualanganmu!</h2>
                     <p class="text-sm sm:text-base lg:text-xl text-gray-700 font-medium">Klik salah satu kartu di bawah ini untuk masuk ke ruang belajar.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 w-full max-w-5xl mx-auto px-4">
+                    
                     <!-- Card 1: Koleksi Batik -->
-                    <div class="glass-panel rounded-[20px] sm:rounded-[30px] p-4 sm:p-6 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-b-8 border-edu-orange group cursor-pointer" onclick="navigateTo('view-koleksi')">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-edu-orange/20 rounded-full flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-vr-cardboard text-3xl sm:text-4xl text-edu-orange"></i>
+                    <div class="relative bg-gradient-to-br from-orange-50 to-orange-200 rounded-[30px] p-6 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border-b-8 border-edu-orange group cursor-pointer overflow-hidden" onclick="navigateTo('view-koleksi')">
+                        <!-- Ornamen Geometri Abstrak -->
+                        <i class="fas fa-circle text-orange-300 text-6xl card-geometric-bg -top-4 -right-4 group-hover:scale-125 transition-transform"></i>
+                        <i class="fas fa-square text-orange-300 text-4xl card-geometric-bg bottom-10 -left-2 rotate-12 group-hover:rotate-45 transition-transform"></i>
+                        
+                        <div class="relative w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-md border-4 border-orange-100 z-10">
+                            <i class="fas fa-vr-cardboard text-4xl text-edu-orange"></i>
                         </div>
-                        <h3 class="font-heading text-lg sm:text-xl font-bold text-edu-brown mb-2">Koleksi Batik</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6 flex-grow">Amati keindahan berbagai motif batik Nusantara di galeri virtual.</p>
-                        <button class="w-full bg-edu-orange text-white font-bold py-2 sm:py-3 px-4 rounded-full shadow-button group-hover:bg-orange-500 transition-colors text-xs sm:text-sm">
-                            Lihat Koleksi <i class="fas fa-arrow-right ml-1"></i>
+                        <h3 class="font-heading text-xl font-bold text-edu-brown mb-2 relative z-10">Koleksi Batik</h3>
+                        <p class="text-sm text-gray-700 mb-6 flex-grow relative z-10 font-medium">Amati keindahan berbagai motif batik Nusantara di galeri virtual.</p>
+                        <button class="relative z-10 w-full bg-edu-orange text-white font-bold py-3 px-4 rounded-full shadow-button group-hover:bg-orange-500 transition-colors text-sm border-2 border-white">
+                            Lihat Koleksi <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </div>
 
                     <!-- Card 2: Ruang Aktivitas -->
-                    <div class="glass-panel rounded-[20px] sm:rounded-[30px] p-4 sm:p-6 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-b-8 border-edu-green group cursor-pointer" onclick="navigateTo('view-aktivitas')">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-edu-green/20 rounded-full flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-pencil-ruler text-3xl sm:text-4xl text-edu-green"></i>
+                    <div class="relative bg-gradient-to-br from-green-50 to-green-200 rounded-[30px] p-6 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border-b-8 border-edu-green group cursor-pointer overflow-hidden" onclick="navigateTo('view-aktivitas')">
+                        <i class="fas fa-play text-green-300 text-6xl card-geometric-bg -bottom-4 -right-2 rotate-45 group-hover:scale-125 transition-transform"></i>
+                        <i class="fas fa-circle text-green-300 text-4xl card-geometric-bg top-10 -left-4 group-hover:scale-110 transition-transform"></i>
+                        
+                        <div class="relative w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-transform shadow-md border-4 border-green-100 z-10">
+                            <i class="fas fa-pencil-ruler text-4xl text-edu-green"></i>
                         </div>
-                        <h3 class="font-heading text-lg sm:text-xl font-bold text-edu-brown mb-2">Ruang Aktivitas</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6 flex-grow">Kerjakan Lembar Kerja Peserta Didik (LKPD) secara interaktif.</p>
-                        <button class="w-full bg-edu-green text-white font-bold py-2 sm:py-3 px-4 rounded-full shadow-button group-hover:bg-green-500 transition-colors text-xs sm:text-sm">
-                            Mulai Aktivitas <i class="fas fa-arrow-right ml-1"></i>
+                        <h3 class="font-heading text-xl font-bold text-edu-brown mb-2 relative z-10">Ruang Aktivitas</h3>
+                        <p class="text-sm text-gray-700 mb-6 flex-grow relative z-10 font-medium">Kerjakan Lembar Kerja Peserta Didik (LKPD) secara interaktif.</p>
+                        <button class="relative z-10 w-full bg-edu-green text-white font-bold py-3 px-4 rounded-full shadow-button group-hover:bg-green-500 transition-colors text-sm border-2 border-white">
+                            Mulai Aktivitas <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </div>
 
                     <!-- Card 3: Tantangan Geometri -->
-                    <div class="glass-panel rounded-[20px] sm:rounded-[30px] p-4 sm:p-6 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border-b-8 border-edu-blue group cursor-pointer" onclick="navigateTo('view-tantangan')">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-edu-blue/20 rounded-full flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-puzzle-piece text-3xl sm:text-4xl text-edu-blue"></i>
+                    <div class="relative bg-gradient-to-br from-blue-50 to-blue-200 rounded-[30px] p-6 flex flex-col items-center text-center shadow-soft hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border-b-8 border-edu-blue group cursor-pointer overflow-hidden" onclick="navigateTo('view-tantangan')">
+                        <i class="fas fa-star text-blue-300 text-6xl card-geometric-bg top-2 -right-4 rotate-12 group-hover:rotate-90 group-hover:scale-110 transition-all duration-500"></i>
+                        <i class="fas fa-square text-blue-300 text-3xl card-geometric-bg bottom-12 -left-2 rotate-45 group-hover:scale-125 transition-transform"></i>
+
+                        <div class="relative w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-12 transition-transform shadow-md border-4 border-blue-100 z-10">
+                            <i class="fas fa-puzzle-piece text-4xl text-edu-blue"></i>
                         </div>
-                        <h3 class="font-heading text-lg sm:text-xl font-bold text-edu-brown mb-2">Tantangan Geometri</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6 flex-grow">Uji pemahamanmu menemukan geometri di batik melalui kuis.</p>
-                        <button class="w-full bg-edu-blue text-white font-bold py-2 sm:py-3 px-4 rounded-full shadow-button group-hover:bg-blue-500 transition-colors text-xs sm:text-sm">
-                            Mulai Tantangan <i class="fas fa-arrow-right ml-1"></i>
+                        <h3 class="font-heading text-xl font-bold text-edu-brown mb-2 relative z-10">Tantangan Geometri</h3>
+                        <p class="text-sm text-gray-700 mb-6 flex-grow relative z-10 font-medium">Uji pemahamanmu menemukan geometri di batik melalui kuis seru.</p>
+                        <button class="relative z-10 w-full bg-edu-blue text-white font-bold py-3 px-4 rounded-full shadow-button group-hover:bg-blue-500 transition-colors text-sm border-2 border-white">
+                            Mulai Kuis <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </div>
                 </div>
@@ -442,33 +389,39 @@
         </section>
 
         <!-- ==========================================
-             VIEW 3: KOLEKSI BATIK (METASTEPS)
+             VIEW 3: KOLEKSI BATIK (METASTEPS) + PERBAIKAN UI
         =========================================== -->
         <section id="view-koleksi" class="app-view w-full max-w-6xl">
             <div class="flex flex-col h-full w-full">
-                <div class="flex flex-col sm:flex-row justify-between items-center w-full mb-2 gap-2 shrink-0">
+                <!-- Banner Petunjuk Layar Penuh -->
+                <div class="bg-blue-50 border-l-4 border-edu-blue p-3 sm:p-4 rounded-r-[15px] mb-4 shadow-sm w-full animate-float">
+                    <p class="text-edu-brown font-bold text-sm sm:text-base flex items-center gap-2">
+                        <i class="fas fa-lightbulb text-edu-yellow text-xl"></i>
+                        Petunjuk: Jika ruang virtual berwarna putih/tidak muncul, silakan klik tombol "Layar Penuh"!
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center w-full mb-3 gap-3 shrink-0">
                     <div>
                         <h2 class="font-heading text-2xl sm:text-3xl font-bold text-edu-brown flex items-center gap-2">
-                            <i class="fas fa-vr-cardboard text-edu-orange"></i> Ruang Virtual Batik
+                            <i class="fas fa-vr-cardboard text-edu-orange"></i> Galeri Virtual Batik
                         </h2>
                     </div>
-                    <a href="https://metasteps.com/viewer/4d02714e-1a29-4d2c-a129-b8a0c852aef3" target="_blank" class="bg-white border-2 border-edu-orange text-edu-orange hover:bg-edu-orange hover:text-white font-bold py-1 sm:py-2 px-4 sm:px-6 rounded-full transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap text-sm sm:text-base">
-                        <i class="fas fa-external-link-alt"></i> Layar Penuh
+                    <!-- Tombol Layar Penuh dibuat berkedip (pulse) agar menarik perhatian -->
+                    <a href="https://metasteps.com/viewer/a1f43d26-a416-4457-9f2f-d03d8d9e85c8?draft=true" target="_blank" class="bg-edu-orange hover:bg-orange-600 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition-colors flex items-center gap-2 shadow-button hover:translate-y-1 text-sm sm:text-base animate-pulse-fast border-2 border-white">
+                        <i class="fas fa-expand"></i> Layar Penuh (Rekomendasi)
                     </a>
                 </div>
 
-                <!-- Iframe Container -->
                 <div class="relative w-full flex-grow iframe-wrapper rounded-[20px] shadow-soft bg-white border-4 border-white flex justify-center items-center overflow-hidden">
-                    <!-- Loader -->
                     <div id="loader-metasteps" class="absolute flex flex-col items-center justify-center z-10">
                         <i class="fas fa-spinner fa-spin text-4xl sm:text-5xl text-edu-orange mb-3 sm:mb-4"></i>
                         <p class="font-bold text-edu-brown text-base sm:text-lg animate-pulse">Menyiapkan Ruang Virtual...</p>
                     </div>
-                    <!-- Embed Iframe -->
                     <iframe 
                         id="iframe-metasteps"
                         src="" 
-                        class="absolute inset-0 w-full h-full border-none opacity-0 transition-opacity duration-1000 z-20"
+                        class="absolute inset-0 w-full h-full border-none opacity-0 transition-opacity duration-1000 z-20 rounded-[15px]"
                         allowfullscreen 
                         loading="lazy">
                     </iframe>
@@ -477,39 +430,37 @@
         </section>
 
         <!-- ==========================================
-             VIEW 4: RUANG AKTIVITAS (CANVA)
+             VIEW 4: RUANG AKTIVITAS (GDRIVE LKPD + MODUL)
         =========================================== -->
-        <section id="view-aktivitas" class="app-view w-full max-w-5xl">
+        <section id="view-aktivitas" class="app-view w-full max-w-6xl">
             <div class="flex flex-col h-full w-full">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center w-full mb-2 gap-2 shrink-0">
-                    <div class="flex-grow">
-                        <h2 class="font-heading text-2xl sm:text-3xl font-bold text-edu-brown flex items-center gap-2">
-                            <i class="fas fa-pencil-ruler text-edu-green"></i> Ruang Aktivitas
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center w-full mb-4 gap-3 shrink-0">
+                    <div>
+                        <h2 class="font-heading text-2xl sm:text-3xl font-bold text-edu-brown flex items-center gap-2 mb-1">
+                            <i class="fas fa-pencil-ruler text-edu-green"></i> Lembar Aktivitas
                         </h2>
+                        <p class="text-gray-600 text-sm font-medium">Lihat dan kerjakan LKPD di bawah ini bersama gurumu.</p>
                     </div>
-                    <div class="flex gap-2 whitespace-nowrap flex-wrap">
-                        <a href="https://canva.link/cnty5cwmu9jvy4w" target="_blank" class="bg-white border-2 border-edu-green text-edu-green hover:bg-edu-green hover:text-white font-bold py-1 sm:py-2 px-4 sm:px-6 rounded-full transition-colors flex items-center gap-2 shadow-sm text-sm sm:text-base">
-                            <i class="fas fa-external-link-alt"></i> Layar Penuh
+                    
+                    <!-- Tombol Aksi Baru -->
+                    <div class="flex gap-2 whitespace-nowrap flex-wrap w-full md:w-auto">
+                        <!-- Unduh/Buka LKPD -->
+                        <a href="https://drive.google.com/file/d/1f8iJ9Dhv-DcPMhTN0vt5y_qfEq04LDvR/preview" target="_blank" class="bg-edu-green hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full transition-colors flex items-center gap-2 shadow-button hover:translate-y-1 text-sm border-2 border-white flex-grow md:flex-grow-0 justify-center">
+                            <i class="fas fa-external-link-alt"></i> Buka Layar Penuh
                         </a>
-                        <button onclick="showCustomNotification('Fitur Unduh sedang disiapkan! Nanti file PDF akan terunduh di sini.')" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-1 sm:py-2 px-4 sm:px-6 rounded-full transition-colors flex items-center gap-2 shadow-button hover:shadow-button-hover hover:translate-y-1 text-sm sm:text-base">
-                            <i class="fas fa-download"></i> Unduh
-                        </button>
                     </div>
                 </div>
 
-                <!-- Iframe Container -->
                 <div class="relative w-full flex-grow iframe-wrapper rounded-[20px] shadow-soft bg-white border-4 border-white flex justify-center items-center overflow-hidden">
-                    <!-- Loader -->
                     <div id="loader-canva" class="absolute flex flex-col items-center justify-center z-10">
                         <i class="fas fa-spinner fa-spin text-4xl sm:text-5xl text-edu-green mb-3 sm:mb-4"></i>
-                        <p class="font-bold text-edu-brown text-base sm:text-lg animate-pulse">Memuat Lembar Aktivitas...</p>
+                        <p class="font-bold text-edu-brown text-base sm:text-lg animate-pulse">Memuat LKPD dari Google Drive...</p>
                     </div>
-                    <!-- Embed Iframe -->
                     <iframe 
                         id="iframe-canva"
                         src="" 
-                        class="absolute inset-0 w-full h-full border-none opacity-0 transition-opacity duration-1000 z-20"
-                        allowfullscreen 
+                        class="absolute inset-0 w-full h-full border-none opacity-0 transition-opacity duration-1000 z-20 rounded-[15px]"
+                        allow="autoplay"
                         loading="lazy">
                     </iframe>
                 </div>
@@ -517,67 +468,54 @@
         </section>
 
         <!-- ==========================================
-             VIEW 5: TANTANGAN GEOMETRI (KUIS)
+             VIEW 5: TANTANGAN GEOMETRI (10 SOAL + FEEDBACK)
         =========================================== -->
         <section id="view-tantangan" class="app-view w-full max-w-4xl">
             <div class="flex flex-col h-full w-full justify-center">
                 <div class="text-center mb-4 sm:mb-6 shrink-0">
-                    <h2 class="font-heading text-2xl sm:text-4xl font-bold text-edu-brown flex justify-center items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-                        <i class="fas fa-puzzle-piece text-edu-blue"></i> Detektif Geometri
+                    <h2 class="font-heading text-2xl sm:text-4xl font-bold text-edu-brown flex justify-center items-center gap-2 sm:gap-3 mb-1 sm:mb-2 drop-shadow-sm">
+                        <i class="fas fa-puzzle-piece text-edu-blue"></i> Kuis Detektif Geometri
                     </h2>
-                    <p class="text-sm sm:text-base text-gray-700 hidden sm:block">Ambil kaca pembesarmu! Mari selesaikan misi menemukan bentuk geometri.</p>
+                    <p class="text-sm sm:text-base text-gray-700 hidden sm:block">Ambil kaca pembesarmu! Mari jawab 10 pertanyaan seru ini.</p>
                 </div>
 
-                <!-- Quiz Container -->
                 <div class="bg-white rounded-[20px] sm:rounded-[30px] p-4 sm:p-8 shadow-soft border-4 border-white relative overflow-hidden flex-grow flex flex-col justify-center max-h-[600px]">
                     
                     <!-- START SCREEN -->
                     <div id="quizStartScreen" class="text-center relative z-10 py-4 sm:py-10">
-                        <div class="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-edu-cream rounded-full flex items-center justify-center border-4 border-edu-blue mb-4 sm:mb-6 shadow-sm">
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-edu-cream rounded-full flex items-center justify-center border-4 border-edu-blue mb-4 sm:mb-6 shadow-sm animate-bounce-slight">
                             <i class="fas fa-search text-4xl sm:text-6xl text-edu-blue"></i>
                         </div>
                         <h3 class="font-heading text-xl sm:text-2xl font-bold text-edu-brown mb-2">Misi Siap Dimulai!</h3>
-                        <p class="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600">Jawab pertanyaan dengan tepat untuk mendapatkan lencana spesial.</p>
-                        <button onclick="startQuiz()" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-lg sm:text-xl">
+                        <p class="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600">Jawab 10 pertanyaan dengan tepat untuk mendapatkan lencana spesial.</p>
+                        <button onclick="startQuiz()" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-lg sm:text-xl border-2 border-white">
                             Mulai Tantangan <i class="fas fa-play ml-2"></i>
-                        </button>
-                        <button onclick="generateQuizWithAI()" id="btnAIQuiz" class="mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-sm sm:text-base flex items-center justify-center mx-auto gap-2 border-2 border-white w-full sm:w-auto">
-                            <i class="fas fa-robot"></i> Racik Kuis AI Baru
                         </button>
                     </div>
 
                     <!-- QUESTION SCREEN -->
                     <div id="quizQuestionScreen" class="hidden relative z-10 flex flex-col h-full">
-                        <!-- Progress Bar -->
                         <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-edu-brown text-xs sm:text-sm" id="quizProgressText">Soal 1 dari 5</span>
-                            <span class="font-bold text-edu-orange text-xs sm:text-sm"><i class="fas fa-star"></i> Poin Tantangan</span>
+                            <span class="font-bold text-edu-brown text-xs sm:text-sm" id="quizProgressText">Soal 1 dari 10</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-4 sm:mb-6 border border-gray-300 shrink-0">
-                            <div id="quizProgressBar" class="bg-edu-green h-full rounded-full transition-all duration-500" style="width: 20%"></div>
+                            <div id="quizProgressBar" class="bg-edu-green h-full rounded-full transition-all duration-500" style="width: 10%"></div>
                         </div>
 
-                        <!-- Question Container -->
-                        <div class="bg-edu-cream p-4 sm:p-6 rounded-[15px] sm:rounded-[20px] border-2 border-edu-yellow mb-4 sm:mb-6 shrink-0">
-                            <h3 class="text-lg sm:text-2xl font-bold text-edu-brown leading-relaxed" id="questionText"></h3>
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-6 rounded-[15px] sm:rounded-[20px] border-2 border-edu-yellow mb-4 sm:mb-6 shrink-0 shadow-sm">
+                            <h3 class="text-lg sm:text-xl font-bold text-edu-brown leading-relaxed" id="questionText"></h3>
                         </div>
 
-                        <!-- Options -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 overflow-y-auto pr-2" id="optionsContainer">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 overflow-y-auto pr-2 pb-2" id="optionsContainer">
                             <!-- Injected via JS -->
                         </div>
 
                         <!-- Controls -->
                         <div class="flex justify-between mt-4 sm:mt-6 border-t-2 border-dashed border-gray-300 pt-4 sm:pt-6 shrink-0">
-                            <button id="btnPrevQuiz" onclick="prevQuestion()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full transition-colors hidden text-sm sm:text-base">
-                                <i class="fas fa-arrow-left mr-1 sm:mr-2"></i> Kembali
-                            </button>
                             <div class="flex-grow"></div>
-                            <button id="btnNextQuiz" onclick="nextQuestion()" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-sm sm:text-base">
-                                Lanjut <i class="fas fa-arrow-right ml-1 sm:mr-2"></i>
-                            </button>
-                            <button id="btnSubmitQuiz" onclick="submitQuiz()" class="hidden bg-edu-green hover:bg-green-500 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-sm sm:text-base">
-                                Lihat Hasil <i class="fas fa-check ml-1 sm:mr-2"></i>
+                            <!-- Tombol berubah fungsi: Cek Jawaban -> Lanjut -->
+                            <button id="btnCheckAction" onclick="handleQuizAction()" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-sm sm:text-base border-2 border-white w-full sm:w-auto">
+                                <span id="btnCheckText">Cek Jawaban</span> <i class="fas fa-arrow-right ml-2" id="btnCheckIcon"></i>
                             </button>
                         </div>
                     </div>
@@ -601,10 +539,10 @@
 
                         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
                             <button onclick="startQuiz()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full transition-colors border-2 border-transparent w-full sm:w-auto text-sm sm:text-base">
-                                <i class="fas fa-redo mr-2"></i> Ulangi
+                                <i class="fas fa-redo mr-2"></i> Ulangi Kuis
                             </button>
-                            <button onclick="navigateTo('view-hub')" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-button hover:shadow-button-hover transition-all w-full sm:w-auto text-sm sm:text-base">
-                                <i class="fas fa-home mr-2"></i> Ke Menu
+                            <button onclick="navigateTo('view-hub')" class="bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-button hover:shadow-button-hover transition-all w-full sm:w-auto text-sm sm:text-base border-2 border-white">
+                                <i class="fas fa-home mr-2"></i> Ke Menu Utama
                             </button>
                         </div>
                     </div>
@@ -653,47 +591,110 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-edu-brown text-edu-cream py-3 sm:py-4 text-center z-10 relative shrink-0">
-        <p class="font-bold text-xs sm:text-sm">© 2026 Ruang Virtual Batik Geometri Indonesia.</p>
+    <!-- Footer Diperbarui -->
+    <footer class="bg-edu-brown text-edu-cream py-4 text-center z-10 relative shrink-0 border-t-4 border-edu-orange">
+        <p class="font-bold text-sm">© 2026 Ruang Virtual Batik Geometri Indonesia.</p>
+        <p class="text-xs mt-1 text-orange-200">Dikembangkan oleh KBK Matematika PGSD UPI Kampus Purwakarta</p>
     </footer>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Data Kuis (PENGATURAN ADMIN MUDAH)
-        let CONFIG_KUIS = [
+        // Data 10 Soal Kuis Sesuai Permintaan
+        const CONFIG_KUIS = [
             {
-                pertanyaan: "Bentuk geometri apa yang paling banyak ditemukan pada motif batik Kawung?",
-                pilihan: ["A. Segitiga", "B. Persegi", "C. Lingkaran / Oval", "D. Trapesium"],
-                jawabanBenar: 2 
+                pertanyaan: "Bentuk apakah yang memiliki 4 sisi sama panjang dan 4 sudut siku-siku?",
+                pilihan: ["A. Segitiga", "B. Lingkaran", "C. Persegi", "D. Oval"],
+                jawabanBenar: 2,
+                feedbackBenar: "✅ Benar! Persegi memiliki 4 sisi yang sama panjang.",
+                feedbackSalah: "❌ Belum tepat. Coba ingat lagi bentuk kotak yang semua sisinya sama panjang."
             },
             {
-                pertanyaan: "Pada motif Tumpal (Pinggiran Batik), bentuk bangun datar apa yang berjejer seperti gigi?",
-                pilihan: ["A. Segitiga", "B. Lingkaran", "C. Persegi Panjang", "D. Belah Ketupat"],
-                jawabanBenar: 0 
+                pertanyaan: "Bangun datar yang tidak memiliki sisi lurus dan sudut adalah...",
+                pilihan: ["A. Persegi", "B. Segitiga", "C. Lingkaran", "D. Persegi Panjang"],
+                jawabanBenar: 2,
+                feedbackBenar: "✅ Hebat! Lingkaran tidak memiliki sisi lurus dan sudut.",
+                feedbackSalah: "❌ Ayo coba lagi. Bentuk roda sepeda adalah petunjuknya."
             },
             {
-                pertanyaan: "Motif Ceplok seringkali menggunakan pola simetris berulang yang tersusun dari bentuk...",
-                pilihan: ["A. Tak beraturan", "B. Persegi dan Poligon", "C. Hanya lingkaran", "D. Garis lengkung bebas"],
-                jawabanBenar: 1 
+                pertanyaan: "Segitiga mempunyai ... sisi.",
+                pilihan: ["A. 2", "B. 3", "C. 4", "D. 5"],
+                jawabanBenar: 1,
+                feedbackBenar: "✅ Benar sekali! Segitiga memiliki 3 sisi.",
+                feedbackSalah: "❌ Yuk hitung lagi jumlah sisinya."
+            },
+            {
+                pertanyaan: "Motif Batik Ceplok banyak memiliki bentuk...",
+                pilihan: ["A. Persegi", "B. Lingkaran", "C. Segitiga saja", "D. Bintang"],
+                jawabanBenar: 0,
+                feedbackBenar: "✅ Tepat! Pada Batik Ceplok banyak ditemukan pola berbentuk persegi.",
+                feedbackSalah: "❌ Coba ingat lagi saat mengamati Batik Ceplok di VR."
+            },
+            {
+                pertanyaan: "Motif Batik Bunga Rafflesia banyak memiliki bentuk...",
+                pilihan: ["A. Persegi", "B. Lingkaran", "C. Segitiga", "D. Trapesium"],
+                jawabanBenar: 1,
+                feedbackBenar: "✅ Benar! Pola bunganya banyak berbentuk lingkaran.",
+                feedbackSalah: "❌ Ingat kembali bentuk bunga Rafflesia yang kamu lihat."
+            },
+            {
+                pertanyaan: "Motif Batik Tumpal banyak memiliki bentuk...",
+                pilihan: ["A. Lingkaran", "B. Persegi", "C. Segitiga", "D. Oval"],
+                jawabanBenar: 2,
+                feedbackBenar: "✅ Hebat! Batik Tumpal memiliki pola segitiga yang berulang.",
+                feedbackSalah: "❌ Yuk lihat lagi bentuk motif Batik Tumpal."
+            },
+            {
+                pertanyaan: "Berapa jumlah sisi pada persegi?",
+                pilihan: ["A. 2", "B. 3", "C. 4", "D. 5"],
+                jawabanBenar: 2,
+                feedbackBenar: "✅ Benar! Persegi mempunyai 4 sisi.",
+                feedbackSalah: "❌ Coba hitung lagi sisi-sisinya."
+            },
+            {
+                pertanyaan: "Bangun datar mana yang paling cocok menjadi roda sepeda?",
+                pilihan: ["A. Persegi", "B. Segitiga", "C. Lingkaran", "D. Persegi Panjang"],
+                jawabanBenar: 2,
+                feedbackBenar: "✅ Tepat! Roda berbentuk lingkaran agar bisa berputar.",
+                feedbackSalah: "❌ Bayangkan bentuk roda sepeda di rumahmu."
+            },
+            {
+                pertanyaan: "Sebuah segitiga mempunyai 3 sisi. Berapa jumlah sudutnya?",
+                pilihan: ["A. 2", "B. 3", "C. 4", "D. 5"],
+                jawabanBenar: 1,
+                feedbackBenar: "✅ Benar! Segitiga memiliki 3 sudut.",
+                feedbackSalah: "❌ Coba perhatikan lagi bentuk segitiga."
+            },
+            {
+                pertanyaan: "Setelah belajar hari ini, bentuk apa yang kamu temukan pada motif batik?",
+                pilihan: ["A. Hanya lingkaran", "B. Hanya persegi", "C. Segitiga, persegi, dan lingkaran", "D. Tidak ada bentuk geometri"],
+                jawabanBenar: 2,
+                feedbackBenar: "✅ Hebat! Kamu berhasil menemukan berbagai bentuk geometri pada motif batik.",
+                feedbackSalah: "❌ Yuk ingat kembali hasil pengamatanmu di Galeri Batik Virtual."
             }
         ];
 
-        // --- SISTEM NOTIFIKASI TOAST (PENGGANTI ALERT) ---
+        // --- SISTEM NOTIFIKASI TOAST DENGAN DURASI LEBIH LAMA ---
         let toastTimeout;
-        function showCustomNotification(message) {
+        function showCustomNotification(message, duration = 3000, type = "info") {
             const toast = document.getElementById('toastNotification');
             const toastMsg = document.getElementById('toastMessage');
             
-            toastMsg.textContent = message;
-            toast.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
-            toast.classList.add('opacity-100', 'scale-100');
+            toastMsg.innerHTML = message; // Allow HTML for line breaks
+            
+            // Set warna border berdasar tipe feedback
+            if (type === "success") {
+                toast.className = "fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-4 rounded-[20px] shadow-2xl z-50 transition-all duration-300 opacity-100 scale-100 flex flex-col md:flex-row items-center gap-3 font-bold max-w-[90vw] text-center border-4 border-green-300";
+            } else if (type === "error") {
+                toast.className = "fixed top-24 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-4 rounded-[20px] shadow-2xl z-50 transition-all duration-300 opacity-100 scale-100 flex flex-col md:flex-row items-center gap-3 font-bold max-w-[90vw] text-center border-4 border-red-300";
+            } else {
+                toast.className = "fixed top-24 left-1/2 transform -translate-x-1/2 bg-edu-brown text-white px-6 py-4 rounded-[20px] shadow-2xl z-50 transition-all duration-300 opacity-100 scale-100 flex flex-col md:flex-row items-center gap-3 font-bold max-w-[90vw] text-center border-4 border-edu-yellow";
+            }
 
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
                 toast.classList.remove('opacity-100', 'scale-100');
                 toast.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
-            }, 3000);
+            }, duration);
         }
 
         // --- SISTEM SPA (Single Page Application) ---
@@ -706,32 +707,20 @@
             const currentEl = document.getElementById(currentView);
             const targetEl = document.getElementById(targetId);
 
-            // Fade out current
             currentEl.style.opacity = '0';
             currentEl.style.transform = 'scale(0.98) translateY(10px)';
             
             setTimeout(() => {
                 currentEl.classList.remove('active');
                 targetEl.classList.add('active');
-                
-                // Force reflow
                 void targetEl.offsetWidth;
-                
-                // Fade in new
                 targetEl.style.opacity = '1';
                 targetEl.style.transform = 'scale(1) translateY(0)';
                 currentView = targetId;
-                
-                // Pindah ke atas dengan halus agar nyaman saat scroll panjang
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                // Update Navbar Visibility
                 updateNavbar(targetId);
-
-                // Load Iframes if entering those views
                 checkAndLoadIframes(targetId);
-
-            }, 300); // Faster transition for better UX
+            }, 300);
         }
 
         function updateNavbar(viewId) {
@@ -744,7 +733,7 @@
         }
 
         function checkAndLoadIframes(viewId) {
-            // Lazy load iframes only when user navigates to them
+            // Galeri Virtual
             if (viewId === 'view-koleksi' && !iframesLoaded.metasteps) {
                 const iframe = document.getElementById('iframe-metasteps');
                 iframe.src = "https://metasteps.com/viewer/a1f43d26-a416-4457-9f2f-d03d8d9e85c8?draft=true";
@@ -755,9 +744,11 @@
                 };
             }
 
+            // GDrive LKPD
             if (viewId === 'view-aktivitas' && !iframesLoaded.canva) {
                 const iframe = document.getElementById('iframe-canva');
-                iframe.src = "https://canva.link/cnty5cwmu9jvy4w";
+                // Menggunakan /preview agar bisa di-embed dengan baik
+                iframe.src = "https://drive.google.com/file/d/1f8iJ9Dhv-DcPMhTN0vt5y_qfEq04LDvR/preview";
                 iframe.onload = () => {
                     document.getElementById('loader-canva').style.display = 'none';
                     iframe.style.opacity = '1';
@@ -766,13 +757,15 @@
             }
         }
 
-        // --- SISTEM KUIS ---
+        // --- SISTEM KUIS DENGAN LOGIKA FEEDBACK ---
         let currentQuizIndex = 0;
         let userAnswers = [];
+        let isQuestionChecked = false;
 
         function startQuiz() {
             currentQuizIndex = 0;
             userAnswers = new Array(CONFIG_KUIS.length).fill(null);
+            isQuestionChecked = false;
             
             document.getElementById('quizStartScreen').classList.add('hidden');
             document.getElementById('quizResultScreen').classList.add('hidden');
@@ -782,17 +775,22 @@
         }
 
         function loadQuestion() {
+            isQuestionChecked = false;
             const currentQ = CONFIG_KUIS[currentQuizIndex];
             
-            // Progress
+            // Set Teks Tombol Aksi kembali ke awal
+            const btnAction = document.getElementById('btnCheckAction');
+            document.getElementById('btnCheckText').textContent = "Cek Jawaban";
+            document.getElementById('btnCheckIcon').className = "fas fa-check-circle ml-2";
+            btnAction.className = "bg-edu-orange hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-sm sm:text-base border-2 border-white w-full sm:w-auto";
+
+            // Update Progress
             document.getElementById('quizProgressText').textContent = `Soal ${currentQuizIndex + 1} dari ${CONFIG_KUIS.length}`;
             const progressPercent = ((currentQuizIndex + 1) / CONFIG_KUIS.length) * 100;
             document.getElementById('quizProgressBar').style.width = `${progressPercent}%`;
 
-            // Text
+            // Setup Pertanyaan & Pilihan
             document.getElementById('questionText').textContent = currentQ.pertanyaan;
-
-            // Options
             const optsContainer = document.getElementById('optionsContainer');
             optsContainer.innerHTML = '';
             
@@ -803,51 +801,61 @@
                 btn.className = `text-left p-3 sm:p-4 text-sm sm:text-base rounded-[15px] border-2 font-bold transition-all shadow-sm ${isSelected ? 'bg-edu-yellow border-edu-brown text-edu-brown shadow-inner' : 'bg-white border-gray-200 text-gray-700 hover:border-edu-blue hover:bg-blue-50'}`;
                 btn.textContent = opt;
                 btn.onclick = () => {
-                    userAnswers[currentQuizIndex] = index;
-                    loadQuestion(); // reload buttons state
+                    if (!isQuestionChecked) {
+                        userAnswers[currentQuizIndex] = index;
+                        loadQuestion(); // reload state visual pilihan
+                    }
                 };
                 optsContainer.appendChild(btn);
             });
-
-            // Buttons
-            document.getElementById('btnPrevQuiz').classList.toggle('hidden', currentQuizIndex === 0);
-            
-            if (currentQuizIndex === CONFIG_KUIS.length - 1) {
-                document.getElementById('btnNextQuiz').classList.add('hidden');
-                document.getElementById('btnSubmitQuiz').classList.remove('hidden');
-            } else {
-                document.getElementById('btnNextQuiz').classList.remove('hidden');
-                document.getElementById('btnSubmitQuiz').classList.add('hidden');
-            }
         }
 
-        function nextQuestion() {
+        function handleQuizAction() {
+            // Jika belum dijawab
             if (userAnswers[currentQuizIndex] === null) {
+                showCustomNotification('Pilih jawabanmu dulu ya! 👆', 3000, "info");
                 const opts = document.getElementById('optionsContainer');
                 opts.classList.add('animate-bounce-slight');
                 setTimeout(() => opts.classList.remove('animate-bounce-slight'), 500);
-                showCustomNotification('Pilih jawaban dulu ya!');
                 return;
             }
-            if (currentQuizIndex < CONFIG_KUIS.length - 1) {
-                currentQuizIndex++;
-                loadQuestion();
-            }
-        }
 
-        function prevQuestion() {
-            if (currentQuizIndex > 0) {
-                currentQuizIndex--;
-                loadQuestion();
+            const currentQ = CONFIG_KUIS[currentQuizIndex];
+            const btnAction = document.getElementById('btnCheckAction');
+            const isCorrect = userAnswers[currentQuizIndex] === currentQ.jawabanBenar;
+
+            // Jika status tombol sedang "Cek Jawaban"
+            if (!isQuestionChecked) {
+                isQuestionChecked = true;
+                
+                // Tampilkan Feedback & Mainkan Suara
+                if (isCorrect) {
+                    playCorrect();
+                    showCustomNotification(currentQ.feedbackBenar, 4000, "success");
+                } else {
+                    playWrong();
+                    showCustomNotification(currentQ.feedbackSalah, 4000, "error");
+                }
+
+                // Ubah gaya tombol ke "Lanjut"
+                document.getElementById('btnCheckText').textContent = currentQuizIndex === CONFIG_KUIS.length - 1 ? "Selesai & Lihat Nilai" : "Lanjut ke Soal Berikutnya";
+                document.getElementById('btnCheckIcon').className = "fas fa-arrow-right ml-2";
+                btnAction.className = "bg-edu-blue hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-button hover:shadow-button-hover hover:translate-y-1 transition-all text-sm sm:text-base border-2 border-white w-full sm:w-auto mt-4 animate-pulse";
+                
+                // Kunci pilihan jawaban (visual style opsional, tapi logic onclick sudah diamankan di loadQuestion)
+            } 
+            // Jika status tombol sedang "Lanjut"
+            else {
+                if (currentQuizIndex < CONFIG_KUIS.length - 1) {
+                    currentQuizIndex++;
+                    loadQuestion();
+                } else {
+                    submitQuiz();
+                }
             }
         }
 
         function submitQuiz() {
-            if (userAnswers.includes(null)) {
-                showCustomNotification('Jawab semua soal dulu ya!');
-                return;
-            }
-
             let correct = 0;
             userAnswers.forEach((ans, i) => { if (ans === CONFIG_KUIS[i].jawabanBenar) correct++; });
             const score = Math.round((correct / CONFIG_KUIS.length) * 100);
@@ -855,7 +863,6 @@
             document.getElementById('quizQuestionScreen').classList.add('hidden');
             document.getElementById('quizResultScreen').classList.remove('hidden');
             
-            // Score animation
             const scoreEl = document.getElementById('finalScore');
             let counter = 0;
             const timer = setInterval(() => {
@@ -867,113 +874,92 @@
                 scoreEl.textContent = counter;
             }, 20);
 
-            if (score > 80) {
+            if (score >= 80) {
                 document.getElementById('badgeIcon').textContent = '🏆';
                 document.getElementById('badgeName').textContent = 'Ahli Geometri';
                 document.getElementById('resultMessage').textContent = 'Luar biasa! Pengetahuanmu tentang Batik Geometri sangat hebat!';
-            } else {
+            } else if (score >= 50) {
                 document.getElementById('badgeIcon').textContent = '🏅';
                 document.getElementById('badgeName').textContent = 'Penjelajah';
                 document.getElementById('resultMessage').textContent = 'Kerja bagus! Ayo terus belajar dan jelajahi Batik Nusantara.';
+            } else {
+                document.getElementById('badgeIcon').textContent = '🌱';
+                document.getElementById('badgeName').textContent = 'Pemula Semangat';
+                document.getElementById('resultMessage').textContent = 'Tetap semangat! Jangan menyerah, baca lagi materi dan coba lagi ya.';
             }
         }
 
-        // --- SISTEM AI KUIS GENERATOR (Gemini API Structured Output) ---
-        async function generateQuizWithAI() {
-            const btn = document.getElementById('btnAIQuiz');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI Meracik Soal...';
-            btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
-
-            const apiKey = ""; // API Key otomatis disediakan oleh platform Canvas
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-            // Meminta Gemini mengeluarkan format JSON persis sesuai kebutuhan kita
-            const payload = {
-                contents: [{ parts: [{ text: "Buatkan 3 soal pilihan ganda untuk anak SD kelas 4 tentang menemukan bentuk geometri dasar (seperti segitiga, persegi, lingkaran, belah ketupat, poligon) pada motif batik tradisional Indonesia. Berikan pilihan A, B, C, D. Bahasa harus ceria dan mudah dipahami anak-anak." }] }],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "ARRAY",
-                        items: {
-                            type: "OBJECT",
-                            properties: {
-                                "pertanyaan": { "type": "STRING", "description": "Teks pertanyaan yang menarik untuk anak SD" },
-                                "pilihan": {
-                                    "type": "ARRAY",
-                                    "items": { "type": "STRING" },
-                                    "description": "4 Pilihan jawaban persis diawali dengan A., B., C., D."
-                                },
-                                "jawabanBenar": { "type": "INTEGER", "description": "Index array dari jawaban yang benar (0, 1, 2, atau 3)" }
-                            },
-                            "required": ["pertanyaan", "pilihan", "jawabanBenar"]
-                        }
-                    }
-                }
-            };
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0) {
-                    const jsonText = result.candidates[0].content.parts[0].text;
-                    const newQuiz = JSON.parse(jsonText);
-                    if(newQuiz && newQuiz.length > 0) {
-                        CONFIG_KUIS = newQuiz;
-                        showCustomNotification("Berhasil! Misi baru telah diracik oleh AI 🤖✨");
-                        startQuiz();
-                    }
-                } else {
-                    showCustomNotification("Gagal membuat kuis. Coba lagi ya!");
-                }
-            } catch (error) {
-                console.error("AI Quiz Error:", error);
-                showCustomNotification("Ups, koneksi terputus saat menghubungi AI.");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
-            }
-        }
-
-        // --- SISTEM AUDIO (TONE.JS GENERATIVE MUSIC) ---
+        // --- SISTEM AUDIO (TONE.JS GENERATIVE MUSIC & SFX) ---
         let isMusicPlaying = false;
         let ambientSequence = null;
+        let sfxSynth, correctSynth, wrongSynth;
+
+        // Inisialisasi Synthesizer untuk Sound Effects
+        function initSFX() {
+            if (sfxSynth) return; // Jika sudah ada, jangan buat ulang
+            
+            sfxSynth = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
+            sfxSynth.volume.value = -12;
+
+            correctSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 0.5 } }).toDestination();
+            correctSynth.volume.value = -10;
+
+            wrongSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.1, decay: 0.3, sustain: 0, release: 0.3 } }).toDestination();
+            wrongSynth.volume.value = -12;
+        }
+
+        // Fungsi memainkan suara-suara
+        function playClick() {
+            initSFX();
+            if (Tone.context.state !== 'running') Tone.start();
+            sfxSynth.triggerAttackRelease("C6", "32n");
+        }
+
+        function playCorrect() {
+            initSFX();
+            if (Tone.context.state !== 'running') Tone.start();
+            correctSynth.triggerAttackRelease(["C5", "E5", "G5"], "8n");
+        }
+
+        function playWrong() {
+            initSFX();
+            if (Tone.context.state !== 'running') Tone.start();
+            wrongSynth.triggerAttackRelease("C3", "4n");
+            setTimeout(() => wrongSynth.triggerAttackRelease("G2", "4n"), 150);
+        }
+
+        // Event Listener Global untuk membunyikan suara saat tombol apapun ditekan
+        document.addEventListener('click', (e) => {
+            const clickable = e.target.closest('button, a, .cursor-pointer');
+            // Mainkan click pop, KECUALI jika tombol tersebut adalah tombol cek jawaban kuis 
+            // (karena akan digantikan dengan suara benar/salah khusus)
+            if (clickable && clickable.id !== 'btnCheckAction') {
+                playClick();
+            }
+        });
 
         async function initGenerativeMusic() {
-            await Tone.start(); // Wajib dipanggil setelah interaksi user
-            
-            if (ambientSequence) return; // Jangan inisialisasi ulang jika sudah ada
+            await Tone.start(); 
+            if (ambientSequence) return; 
 
-            // Buat instrumen Synthesizer yang lembut seperti gamelan/kalimba
             const synth = new Tone.PolySynth(Tone.Synth, {
                 oscillator: { type: "sine" },
                 envelope: { attack: 0.5, decay: 1, sustain: 0.3, release: 2 }
             });
 
-            // Efek ruang untuk nuansa pelan dan menenangkan
             const reverb = new Tone.Reverb({ decay: 5, wet: 0.6 });
             const delay = new Tone.FeedbackDelay("8n.", 0.4);
             delay.wet.value = 0.3;
 
             synth.chain(delay, reverb, Tone.Destination);
-            synth.volume.value = -12; // Volume pelan
+            synth.volume.value = -12; 
 
-            // Tangga nada Pentatonik (C Major Pentatonic) untuk nuansa damai
             const notes = ["C4", "D4", "E4", "G4", "A4", "C5"];
             
-            // Urutan nada acak yang mengalir terus menerus
             ambientSequence = new Tone.Pattern(function(time, note){
                 synth.triggerAttackRelease(note, "2n", time);
             }, notes, "randomWalk");
-
-            ambientSequence.interval = "4n"; // Tempo santai
+            ambientSequence.interval = "4n";
         }
 
         document.getElementById('btnMusicToggle').addEventListener('click', async () => {
@@ -981,7 +967,6 @@
             const btn = document.getElementById('btnMusicToggle');
             
             if (!isMusicPlaying) {
-                // Mulai mainkan
                 await initGenerativeMusic();
                 Tone.Transport.start();
                 ambientSequence.start(0);
@@ -989,20 +974,19 @@
                 iconStatus.classList.replace('fa-play', 'fa-pause');
                 btn.classList.replace('bg-edu-orange', 'bg-edu-blue');
                 isMusicPlaying = true;
-                showCustomNotification("Musik relaksasi dimainkan 🎵");
+                showCustomNotification("Musik relaksasi dimainkan 🎵", 2000, "info");
             } else {
-                // Hentikan
                 ambientSequence.stop();
                 Tone.Transport.pause();
                 
                 iconStatus.classList.replace('fa-pause', 'fa-play');
                 btn.classList.replace('bg-edu-blue', 'bg-edu-orange');
                 isMusicPlaying = false;
-                showCustomNotification("Musik dihentikan 🔇");
+                showCustomNotification("Musik dihentikan 🔇", 2000, "info");
             }
         });
 
-        // --- SISTEM AI GEMINI (CHAT WIDGET) ---
+        // --- SISTEM AI GEMINI (CHAT WIDGET MURNI TEKS & KETAT PELAJARAN) ---
         const chatPanel = document.getElementById('aiChatPanel');
         const btnChatToggle = document.getElementById('btnChatToggle');
         const btnCloseChat = document.getElementById('btnCloseChat');
@@ -1010,11 +994,9 @@
         const btnSendChat = document.getElementById('btnSendChat');
         const chatMessages = document.getElementById('chatMessages');
 
-        // Toggle Widget
         btnChatToggle.addEventListener('click', () => chatPanel.classList.add('open'));
         btnCloseChat.addEventListener('click', () => chatPanel.classList.remove('open'));
 
-        // Fungsi Menambah Pesan ke UI
         function appendMessage(text, isUser = false) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `p-3 rounded-2xl shadow-sm border text-sm max-w-[85%] ${
@@ -1022,20 +1004,17 @@
                 ? 'bg-edu-blue text-white rounded-tr-none self-end border-blue-400' 
                 : 'bg-white text-gray-700 rounded-tl-none self-start border-gray-200'
             }`;
-            
-            // Merender teks biasa (ubah baris baru menjadi <br>)
             msgDiv.innerHTML = text.replace(/\n/g, '<br>');
             chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll ke bawah
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
             return msgDiv;
         }
 
-        // Fungsi Memanggil API Gemini
         async function sendToGemini(userMessage) {
-            const apiKey = ""; // API Key disisipkan otomatis oleh platform
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const apiKey = ""; 
+            // Mengubah URL model ke versi gemini-2.5-flash-preview-09-2025 yang didukung
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             
-            // Instruksi ketat agar AI hanya membahas pelajaran
             const systemPrompt = "Kamu adalah 'Guru Geometri', chatbot pendidikan interaktif yang membantu anak SD. Tugas utamamu HANYA menjawab pertanyaan terkait pembelajaran, khususnya Matematika, Geometri dasar, dan motif Batik Indonesia. Jika ada pertanyaan di luar topik pembelajaran (seperti game, gosip, mainan, dll), tolak dengan halus dan ceria, lalu arahkan anak untuk kembali bertanya soal pelajaran. Jawab dengan bahasa Indonesia yang sangat sederhana, ramah, mudah dipahami anak SD (maksimal 2 paragraf pendek). Jangan lupa gunakan emoji lucu!";
 
             const payload = {
@@ -1049,7 +1028,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
                 const result = await response.json();
                 
                 if (result.candidates && result.candidates[0].content.parts[0].text) {
@@ -1063,23 +1041,17 @@
             }
         }
 
-        // Handle Pengiriman Pesan
         async function handleSendChat() {
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // 1. Tampilkan pesan user
             appendMessage(text, true);
             chatInput.value = '';
             chatInput.focus();
 
-            // 2. Tampilkan indikator loading
             const loadingMsg = appendMessage('<i class="fas fa-spinner fa-spin"></i> Guru AI sedang berpikir...', false);
-
-            // 3. Panggil API Text
             const reply = await sendToGemini(text);
-
-            // 4. Hapus loading, tampilkan jawaban murni teks
+            
             loadingMsg.remove();
             appendMessage(reply, false);
         }
